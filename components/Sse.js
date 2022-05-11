@@ -16,7 +16,7 @@ class SSE extends React.Component {
 
     this.eventSource.addEventListener(
       "event",
-      evt => {
+      (evt) => {
         const data = JSON.parse(evt.data); //returns a string so needs further parsing into a JSON
         // Use data here
         let eventData = JSON.parse(data);
@@ -31,11 +31,11 @@ class SSE extends React.Component {
             console.log(
               `SSE.js -- componentDidMount:: uuid: ${eventData.uuid}`
             );
-            if(eventData.status ==="connected"){
+            if (eventData.status === "connected") {
               this.props.didAuthOK(eventData.uuid, this.props.sealSession);
-
+              this.props.onConnected();
             }
-            if(eventData.status==="sent"){
+            if (eventData.status === "sent") {
               this.props.vcSentOK(eventData.uuid, this.props.sealSession);
             }
           }
@@ -54,6 +54,10 @@ class SSE extends React.Component {
               case "sent":
                 console.log("SSE.js:: VC sent to user");
                 this.props.vcSent();
+                return "";
+              case "palaemon-device":
+                console.log("SEE.js:: palaemon app connected succesfully");
+                this.props.deviceAdded();
                 return "";
               default:
                 console.log("SSE.js:: default");
@@ -79,13 +83,13 @@ class SSE extends React.Component {
 function mapStateToProps(state) {
   return {
     session: state.serverSession,
-    status: state.sessionStatus
+    status: state.sessionStatus,
     // serverSessionId: state.serverSessionId,
     // endpoint: state.endpoint
   };
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     vcSent: () => {
       dispatch(vcSentToUser());
@@ -93,9 +97,9 @@ const mapDispatchToProps = dispatch => {
     didAuthOK: (uuid, sealSession) => {
       dispatch(completeDIDAuth(uuid, sealSession));
     },
-    vcSentOK: (uuid,sealSession) =>{
-      dispatch(vcSentToUser(uuid,sealSession))
-    }
+    vcSentOK: (uuid, sealSession) => {
+      dispatch(vcSentToUser(uuid, sealSession));
+    },
   };
 };
 

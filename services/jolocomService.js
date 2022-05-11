@@ -3,7 +3,7 @@ const imageDataURI = require("image-data-uri");
 import { streamToBuffer } from "@jorgeferrero/stream-to-buffer";
 import { vcTypes } from "../config/vcTypes";
 import { AuthenticationProcessor } from "../utils/jolocomProcessors/authenticationProcessor";
-import { setOrUpdateSessionData } from "../services/redis";
+import { setOrUpdateSessionData } from "./redis";
 // import session from "express-session";
 const jsesc = require("jsesc");
 
@@ -62,7 +62,7 @@ const makeConnectionRequest = async (
 ) => {
   const authRequest = await issuerAgent.authRequestToken({
     callbackURL: `${callback}`,
-    description: "connect with SEAL/myIDs SSI Issuer?",
+    description: "Connect with KYB Custodian?",
   });
   // console.log(authRequest);
   var code = qr.image(authRequest.encode(), {
@@ -96,13 +96,11 @@ const connectionResponseServ = async (
   let sessionUpdated = await setOrUpdateSessionData(sealSessionId, "DID", did);
   let responseToken =
     await userConnectionResponse.createAuthenticationResponse();
-  // console.log(responseToken.encode());
-  // console.log("!@#");
   return responseToken.encode();
 };
 
 const makeCredentialOffer = async (
-  sealSession,
+  sessionId,
   vcType,
   userAttributes,
   callback,
@@ -111,75 +109,60 @@ const makeCredentialOffer = async (
 ) => {
   // let did = await getSessionData(sealSession, "DID");
   //store the attributes of the user in session to get them from the call of the wallet
+  console.log("jolocomService makeCredentialOffer")
+  console.log(userAttributes)
+  
+  
   await setOrUpdateSessionData(
-    sealSession,
+    sessionId,
     "user",
     jsesc(userAttributes, {
       json: true,
     })
   );
+
   let credentialOfferJSON = {
     callbackURL: callback,
     offeredCredentials: [
       {
-        type: vcType,
+        type: "Palaemon_Service_Card",
         renderInfo: {
           renderAs: "document",
         },
         credential: {
-          name: vcType,
+          name: "Palaemon_Service_Card",
           display: {
             properties: [
-              { path: ["$.familyName"], label: "Family Name", value: "" },
+              { path: ["$.name"], label: "Name", value: "" },
               {
-                path: ["$.given_name"],
-                label: "Given Name",
+                path: ["$.surname"],
+                label: "Surname",
                 value: "",
               },
-              { path: ["$.legal_name"], label: "Legal Name", value: "" },
+              { path: ["$.gender"], label: "Gender", value: "" },
               {
-                path: ["$.legal_person_identifier"],
-                label: "Legal Person Identifier",
-                value: "",
-              },
-              {
-                path: ["$.business_role"],
-                label: "Business Role",
-                value: "",
-              },
-              {
-                path: ["$.address"],
-                label: "Address",
-                value: "",
-              },
-              {
-                path: ["$.lei"],
-                label: "L.E.I.",
-                value: "",
-              },
-              {
-                path: ["$.vat_registration"],
-                label: "Vat Registration Number.",
-                value: "",
-              },
-              {
-                path: ["$.birthdate"],
+                path: ["$.age"],
                 label: "Date of Birth",
                 value: "",
               },
               {
-                path: ["$.trading_status"],
-                label: "Trading Status",
+                path: ["$.ticketNumber"],
+                label: "Ticket",
                 value: "",
               },
               {
-                path: ["$.personal_number"],
-                label: "Personal Identifier",
+                path: ["$.medical_conditions"],
+                label: "Medical Conditions",
                 value: "",
               },
               {
-                path: ["$.sub_jurisdiction"],
-                label: "Subjurisdiction",
+                path: ["$.crewMember"],
+                label: "Is a Crew Member",
+                value: "",
+              },
+              {
+                path: ["$.role"],
+                label: "Onbard role",
                 value: "",
               },
             ],
@@ -209,52 +192,40 @@ const makeVC = async (
   issuerAgent
 ) => {
   const simpleExampleCredMetadata = {
-    type: ["VerifiableCredential", credType],
-    name: credType,
+    type: ["Credential", "Palaemon_Service_Card"],
+    name: "Palaemon_Service_Card",
     context: [
       {
-        SimpleExample: `https://seal.project.eu/terms/${credType}`,
+        SimpleExample: `https://palaemon.eu/terms/${credType}`,
         schema: "https://schema.org/",
         source: "schema:source",
       },
     ],
   };
+  
+  
+  console.log("JolocomService.js:: makeVC")
+  console.log(userData) 
+  
   let claimValues = {};
 
-  simpleExampleCredMetadata.context[0].family_name = "schema:familyName";
-  simpleExampleCredMetadata.context[0].given_name = "schema:name";
-  simpleExampleCredMetadata.context[0].legal_name = "schema:legal_name";
-  simpleExampleCredMetadata.context[0].legal_person_identifier =
-    "schema:legal_person_identifier";
-  simpleExampleCredMetadata.context[0].business_role = "schema:business_role";
-  simpleExampleCredMetadata.context[0].address = "schema:address";
-  simpleExampleCredMetadata.context[0].lei = "schema:lei";
-  simpleExampleCredMetadata.context[0].vat_registration =
-    "schema:vat_registration";
-  simpleExampleCredMetadata.context[0].birthdate = "schema:birthdate";
-  simpleExampleCredMetadata.context[0].trading_status = "schema:trading_status";
-  simpleExampleCredMetadata.context[0].personal_number = "schema:Person";
-  simpleExampleCredMetadata.context[0].sub_jurisdiction =
-    "schema:sub_jurisdiction";
-
-  if (userData.family_name) claimValues.family_name = userData.family_name;
-  if (userData.given_name) claimValues.given_name = userData.given_name;
-  if (userData.legal_name) claimValues.legal_name = userData.legal_name;
-  if (userData.legal_person_identifier)
-    claimValues.legal_person_identifier = userData.legal_person_identifier;
-  if (userData.business_role)
-    claimValues.business_role = userData.business_role;
-  if (userData.address) claimValues.address = userData.address;
-  if (userData.lei) claimValues.lei = userData.lei;
-  if (userData.vat_registration)
-    claimValues.vat_registration = userData.vat_registration;
-  if (userData.birthdate) claimValues.birthdate = userData.birthdate;
-  if (userData.trading_status)
-    claimValues.trading_status = userData.trading_status;
-  if (userData.personal_number)
-    claimValues.personal_number = userData.personal_number;
-  if (userData.sub_jurisdiction)
-    claimValues.sub_jurisdiction = userData.sub_jurisdiction;
+  simpleExampleCredMetadata.context[0].family_name = "schema:name";
+  simpleExampleCredMetadata.context[0].given_name = "schema:surname";
+  simpleExampleCredMetadata.context[0].legal_name = "schema:gender";
+  simpleExampleCredMetadata.context[0].date_of_birth =
+    "schema:date_of_birth";
+    simpleExampleCredMetadata.context[0].business_role = "schema:ticket";
+    simpleExampleCredMetadata.context[0].business_role = "schema:medical_conditions";
+  
+  if (userData.name) claimValues.name = userData.name;
+  if (userData.surname) claimValues.surname = userData.surname;
+  if (userData.gender) claimValues.gender = userData.gender;
+  if (userData.age)
+    claimValues.age = userData.age;
+  if (userData.ticketNumber) claimValues.ticketNumber = userData.ticketNumber;
+  if (userData.medical_condnitions) claimValues.medical_conditions = userData.medical_condnitions;
+  if(userData.role) claimValues.role = userData.role;
+  if(userData.isCrew) claimValues.crewMember = userData.isCrew;
 
   const offeredCredential = await issuerAgent.signedCredential(
     {

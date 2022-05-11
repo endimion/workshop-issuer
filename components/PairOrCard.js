@@ -4,6 +4,10 @@ import GridContainer from "../components/Grid/GridContainer";
 import GridItem from "../components/Grid/GridItem";
 
 const PairOrCard = (props) => {
+  let sseEndpoint = props.baseUrl
+    ? `${props.endpoint}/${props.baseUrl}`
+    : props.endpoint;
+  
   let vcSentToUser = (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -56,9 +60,7 @@ const PairOrCard = (props) => {
   if (props.vcSent) {
     return vcSentToUser;
   }
-  let sseEndpoint = props.baseUrl
-    ? `${props.endpoint}/${props.baseUrl}`
-    : props.endpoint;
+  
 
   if (props.qrData && !props.DID) {
     return (

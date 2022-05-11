@@ -17,7 +17,7 @@ export default function LayoutNew(props, { children, home }) {
   const classes = useStyles();
   const { ...rest } = props;
   return (
-    <GridContainer direction="column" justifyContent="space-between">
+    <GridContainer direction="column" justifyContent="space-between" >
       <div className={classes.jss413}>
         <Header
           absolute
@@ -27,7 +27,7 @@ export default function LayoutNew(props, { children, home }) {
           {...rest}
         />
       </div>
-      <div className={classes.container}>
+      <div className={classes.container} style={{fontFamily: "Open Sans,sans-serif!important"}}>
         <GridContainer>
           <GridItem xs={12} sm={12} md={8}>
             <main>{props.children}</main>

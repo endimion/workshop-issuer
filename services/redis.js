@@ -21,17 +21,17 @@ const setOrUpdateSessionData = async (
   let cacheObject = {
     [variableName]: variableValue,
   };
-  console.log("object to cache with key sessionId " + sessionId + "-variable name-"+ variableName);
-  console.log(cacheObject);
+  // console.log("object to cache with key sessionId " + sessionId + "-variable name-"+ variableName);
+  // console.log(cacheObject);
   //frist make sure object doesnot exist
   //if it exists get it and update if necessary its keys
   let existingObject = JSON.parse(await getSessionData(sessionId));
-  console.log("redis.js:: existing object");
-  console.log(existingObject);
+  // console.log("redis.js:: existing object");
+  // console.log(existingObject);
   if (existingObject) {
     existingObject[variableName] = variableValue;
-    console.log("redis.js:: will update cache with " )
-    console.log(existingObject)
+    // console.log("redis.js:: will update cache with " )
+    // console.log(existingObject)
     await client.setex(sessionId, DEFAULT_EXPIRATION, JSON.stringify(existingObject));
   } else {
     await client.setex(sessionId, DEFAULT_EXPIRATION, JSON.stringify(cacheObject));

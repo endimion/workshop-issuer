@@ -65,7 +65,7 @@ export default function Header(props) {
   const brandComponent = (
     <Link href="/components" as="/components">
       <img className={classes.resizeImg} style={{maxHeight:"5rem"}}
-          src="/img/GRIDS_logo_v04_White.svg"
+          src="/img/palaemon-logo-sticker.png"
           alt="..."
       />
     </Link>

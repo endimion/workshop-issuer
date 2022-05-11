@@ -8,23 +8,22 @@ import {
 } from "../services/jolocomService";
 import { getSessionData } from "../services/redis";
 
-import { getSealSessionData } from "../services/sealService";
 
 import { publish } from "../services/sse-service";
 
 const makeConnectionRequestController = async (req, res, issuerAgent) => {
-  let sealSession = req.body.sealSession;
+  let sessionId = req.body.sessionId;
   let vcType = req.body.vcType;
+  let endpoint = req.body.endpoint
   let isMobile = req.body.isMobile ? true : false;
   let callback = req.baseUrl
-    ? `${req.session.endpoint}/${req.baseUrl}/connectionResponse?sealSession=${sealSession}`
-    : req.session.endpoint + "/connectionResponse?sealSession=" + sealSession;
-  let sessionId = req.session.id;
-  console.log(
-    "jolocom-api-contorller, makeConnectionRquest callback::" + callback
-  );
+    ? `${endpoint}/${req.baseUrl}/connectionResponse?sessionId=${sessionId}`
+    : endpoint + "/connectionResponse?sessionId=" + sessionId;
+  // console.log(
+  //   "jolocom-api-contorller, makeConnectionRquest callback::" + callback
+  // );
   let response = await makeConnectionRequest(
-    sealSession,
+    sessionId,
     vcType,
     isMobile,
     callback,
@@ -36,7 +35,7 @@ const makeConnectionRequestController = async (req, res, issuerAgent) => {
 
 const handleConnectionResponse = async (req, res, issuerAgent) => {
   console.log("jolocom-api-controller.js handleConnectionResponse ");
-  const sealSessionId = req.query.sealSession; //get the sesionId that is picked up from the response uri
+  const sessionId = req.query.sessionId; //get the sesionId that is picked up from the response uri
   const jwtResponse = req.body.token;
   // retrieve the server sessionId from the SesssionManager
   const responseToken = await handleJolocomFlow(req.body.token, issuerAgent);
@@ -47,14 +46,14 @@ const handleConnectionResponse = async (req, res, issuerAgent) => {
   let responseForUserWallet = await connectionResponseServ(
     jwtResponse,
     issuerAgent,
-    sealSessionId
+    sessionId
   );
 
   req.session.did = true;
   publish(
     JSON.stringify({
-      uuid: sealSessionId,
-      sessionId: sealSessionId,
+      uuid: sessionId,
+      sessionId: sessionId,
       status: "connected",
     })
   );
@@ -72,10 +71,12 @@ const handleConnectionResponse = async (req, res, issuerAgent) => {
 };
 
 const handleVCRequestController = async (req, res, issuerAgent, endpoint) => {
+  console.log("handleVCRequestController ");
   let sessionId = req.body.sessionId;
   let vcType = req.body.vcType;
   let isMobile = req.body.isMobile ? true : false;
-  let userData = req.session.userData;
+  let userData = await getSessionData(sessionId,"profile")//req.session.userData;
+  // console.log(userData);
   // req.session.endpoint = endpoint;
   // req.session.baseUrl = process.env.BASE_PATH;
 
@@ -84,7 +85,7 @@ const handleVCRequestController = async (req, res, issuerAgent, endpoint) => {
     : endpoint + `/offerResponse?vcType=${vcType}&sessionId=${sessionId} `;
   // console.log("handleVCRequestController userData in session")
   // console.log(userData)
-  console.log("handleVCRequestController the callback is " + callback);
+  
   let response = await makeCredentialOffer(
     sessionId,
     vcType,
@@ -97,15 +98,15 @@ const handleVCRequestController = async (req, res, issuerAgent, endpoint) => {
 };
 
 const handleVCResponseController = async (req, res, issuerAgent) => {
-  let sealSessionId = req.query.sessionId;
+  let sessionId = req.query.sessionId;
   let vcType = req.query.vcType;
   console.log("handleVCResponseController");
   // console.log(sealSessionId);
 
-  let sessionDetails = await getSessionData(sealSessionId) //, "userDetails");
+  let sessionDetails = await getSessionData(sessionId) //, "userDetails");
   console.log("session details")
   console.log(sessionDetails);
-  let kybAttributes = JSON.parse(sessionDetails).kybProfile;
+  let kybAttributes = JSON.parse(sessionDetails).profile;
   // console.log("user attributes::");
   // console.log(userAttributes);
   let userDID = JSON.parse(sessionDetails).DID;//await getSealSessionData(sealSessionId, "DID");
@@ -121,8 +122,8 @@ const handleVCResponseController = async (req, res, issuerAgent) => {
 
   publish(
     JSON.stringify({
-      uuid: sealSessionId,
-      sessionId: sealSessionId,
+      uuid: sessionId,
+      sessionId: sessionId,
       status: "sent",
     })
   );

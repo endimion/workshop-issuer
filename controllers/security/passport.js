@@ -5,16 +5,11 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const { Strategy, discoverAndCreateClient } = require("passport-curity");
-const http = require("http");
 const https = require("https");
 const jose = require("node-jose");
 const fs = require("fs");
-const Kyb = require("../../config/mongooseSchema");
-const repo = require("../../repository/kybRepo");
-const { JWK, JWE } = require("node-jose");
 import { defaultClaims } from "../../config/defaultOidcClaims";
-import { getSessionData, setOrUpdateSessionData } from "../../services/redis";
-import { getUserByeIDASIdenitifier } from "../../repository/kybRepo";
+
 
 // Part 3, create a JWKS
 const keyStore = jose.JWK.createKeyStore();
@@ -35,35 +30,25 @@ const getConfiguredPassport = async (
 ) => {
   let _issuer_url = process.env.ISSUER_URL
     ? process.env.ISSUER_URL
-    : "https://vm.project-grids.eu:8180/auth/realms/grids";
-  // let _client_id = process.env.OIDC_CLIENT_ID?process.env.OIDC_CLIENT_ID:"test"
-  // let _client_secret = process.env.OIDC_CLIENT_SECRET?process.env.OIDC_CLIENT_SECRET:"5814f193-2ef3-45ee-967c-e4e647d9bc48"
+    : "https://dss1.aegean.gr/auth/realms/SSI";
 
-  let _redirect_uri = isProduction
+    let _redirect_uri = isProduction
     ? process.env.OIDC_REDIRECT_URI
-    : `http://localhost:5000/login/callback`;
+    : `http://localhost:5030/login/callback`;
 
   let vc_redirect_uri = isProduction
     ? process.env.VC_REDIRECT_URI
-    : `http://localhost:5000/vc/response/kyb`;
+    : `http://localhost:5030/vc/response/kyb`;
 
   let jwks_uri = process.env.JWKS_URI
     ? process.env.JWKS_URI
     : `${serverEndpoint}/jwks`;
 
-  // Part 4a, get dynamic registration client id and secret
-  const dynamicClient = JSON.parse(
-    await getDynClient([_redirect_uri, vc_redirect_uri], jwks_uri)
-  );
-  const dynClientId = dynamicClient.client_id;
-  const dynClientSecret = dynamicClient.client_secret;
+ 
 
-  // console.log({
-  //   issuerUrl: _issuer_url,
-  //   clientID: dynClientId,
-  //   clientSecret: dynClientSecret,
-  //   redirectUris: [_redirect_uri],
-  // });
+
+  const dynClientId =  "test-ssi" 
+  const dynClientSecret = "5da95a22-1eb9-4026-9e5a-2367fa02f8e8" 
 
   // Part 4b, discover Curity Server metadata and configure the OIDC client
   const client = await discoverAndCreateClient({
@@ -75,7 +60,7 @@ const getConfiguredPassport = async (
 
   let _user_info_request = process.env.USER_INFO
     ? process.env.USER_INFO
-    : "vm.project-grids.eu";
+    : "dss1.aegean.gr";
   let _user_info_port = process.env.USER_INFO_PORT
     ? process.env.USER_INFO_PORT
     : "8180";
@@ -102,7 +87,7 @@ const getConfiguredPassport = async (
     const data = JSON.stringify({
       application_type: "web",
       redirect_uris: redirectURIs,
-      client_name: "GridsUAegean",
+      client_name: "palaemonClient",
       subject_type: "pairwise",
       token_endpoint_auth_method: "client_secret_basic",
       jwks_uri: jwksURI,
@@ -110,13 +95,14 @@ const getConfiguredPassport = async (
       userinfo_encrypted_response_enc: "A128CBC-HS256",
     });
 
+    let USER_INFO = process.env.USER_INFO
     const options = {
-      hostname: "vm.project-grids.eu",
-      port: 8180,
-      path: "/auth/realms/grids/clients-registrations/openid-connect",
+      hostname: USER_INFO,
+      // port: 8180,
+      path: "/auth/realms/grnetEidas/clients-registrations/openid-connect",
       method: "POST",
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI3NDdiMzRmNy02YmZjLTRhODgtODgxYS0wYjlhNWQ3NjZmOTgifQ.eyJleHAiOjAsImlhdCI6MTYzNDgxNzI1MiwianRpIjoiYzNiNjZiNjEtOTg5Yy00ZmY5LWJlNGQtNTdmZmJiMDIxODM1IiwiaXNzIjoiaHR0cHM6Ly92bS5wcm9qZWN0LWdyaWRzLmV1OjgxODAvYXV0aC9yZWFsbXMvZ3JpZHMiLCJhdWQiOiJodHRwczovL3ZtLnByb2plY3QtZ3JpZHMuZXU6ODE4MC9hdXRoL3JlYWxtcy9ncmlkcyIsInR5cCI6IkluaXRpYWxBY2Nlc3NUb2tlbiJ9.-0XGFJobxqzvtLeJby9geLLOptj8ofFUwJQpknEqpyY`,
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI4OWZjYTFlNC03Zjc4LTRkNWEtODhkNC0zMzJlYjczNjliOGUifQ.eyJqdGkiOiIwZWRmOWIyYy02ZGZiLTQ5NzgtYWQ5Zi00NzdjODg3YzBhZTMiLCJleHAiOjAsIm5iZiI6MCwiaWF0IjoxNjM3MzE4MjQ5LCJpc3MiOiJodHRwczovL2RzczEuYWVnZWFuLmdyL2F1dGgvcmVhbG1zL2dybmV0RWlkYXMiLCJhdWQiOiJodHRwczovL2RzczEuYWVnZWFuLmdyL2F1dGgvcmVhbG1zL2dybmV0RWlkYXMiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.MkyA9bAPcxK7BWqFkV9SUU3CY38AUOWVJTbTLgG7PZY`,
         "Content-Type": "application/json",
         "Content-Length": data.length,
       },
@@ -132,6 +118,8 @@ const getConfiguredPassport = async (
         });
         res.on("end", function () {
           const body = Buffer.concat(chunks);
+          console.log("passpppport.js client registration response")
+          console.log(body.toString())
           resolve(body.toString());
         });
       });
@@ -168,51 +156,11 @@ const getConfiguredPassport = async (
     passport.authenticate("curity", { failureRedirect: "/login" }), //listens to /login/callback
     async (req, res) => {
       console.log("passport.js:: will now redirect to the view");
-      // console.log(req.user);
-      // read cookies
-      // console.log("cookies!!!!")
-      // console.log(req.cookies);
-      // console.log("*************")
-      let sessionId = req.cookies.sessionId;
-      // console.log(`sessionId: ${sessionId}`)
-      // console.log("PASSPORT.JS REQ.USEr");
-      // console.log(req.user);
-
-      await setOrUpdateSessionData(sessionId, "userDetails", req.user);
-      let redirect_uri =
-        req.cookies.kyb === "false"
-          ? "/validate-relation"
-          : `/vc/issue/kybResponse?sessionId=${req.cookies.kyb}`;
-
-      let kompanySessionId = req.cookies.kompanySessionId
-      if(kompanySessionId){
-        console.log("passport.js will go to kompany redirect for with user details (req.user):")
-        console.log(req.user)
-        redirect_uri = `/kompany/proceed?sessionId=${sessionId}`
-      }
-
-      if (req.cookies.kyb !== "false") {
-        let personalIdentifier = req.user.personal_number;
-        console.log(
-          "passport.js passport.authenticate :: user with eIDAS " +
-            personalIdentifier
-        );
-        //TODO call the registry for user data
-        //if not found then error
-        let userFound = await getUserByeIDASIdenitifier(personalIdentifier);
-        if (!userFound) {
-          console.log(
-            "no user found in mongo. This means that the user is not registerd so will display error"
-          );
-          redirect_uri = "/userNotFound";
-        } else {
-          console.log(
-            `founda mathcing user in the public registry for ${personalIdentifier} will add to session ${sessionId}`
-          );
-          setOrUpdateSessionData(sessionId, "kybProfile", userFound);
-        }
-      }
-
+      
+      console.log("PASSPORT.JS REQ.USEr");
+      console.log(req.user);
+      let redirect_uri="/login_success"
+      
       console.log(`passport.js:: will redirect to ${redirect_uri}`);
       res.redirect(redirect_uri);
     }
@@ -220,195 +168,9 @@ const getConfiguredPassport = async (
   return { passport: passport, client: client };
 };
 
-function getDataFromDPs(_user_info_request, _user_info_port, accessToken) {
-  const options = {
-    hostname: _user_info_request,
-    port: _user_info_port,
-    path: "/auth/realms/grids/protocol/openid-connect/userinfo",
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Length": "0",
-    },
-  };
-  return new Promise((resolve, reject) => {
-    const httpsReq = https.request(options, function (res) {
-      const chunks = [];
-      res.on("data", function (chunk) {
-        chunks.push(chunk);
-      });
-      res.on("end", async function () {
-        const body = Buffer.concat(chunks);
-        console.log("******* USER INFO **********************");
-        // console.log(body.toString());
-        const resJson = JSON.parse(body.toString());
-        console.log(resJson);
-        console.log("******* USER INFO END **********************");
-        consolidateDPAnswers(reject, resolve, resJson);
-      });
-    });
-    httpsReq.end();
-  });
-}
 
-async function consolidateDPAnswers(reject, resolve, resJson) {
-  let src1Claims = null;
-  let src2Claims = null;
-  let src1Err = null;
-  let src2Err = null;
 
-  if (resJson._claim_sources.src1) {
-    try {
-      src1Claims = await sendToken(
-        resJson._claim_sources.src1.access_token,
-        resJson._claim_sources.src1.endpoint
-      );
-    } catch (err) {
-      console.log(
-        "passport.js:: ConsolidateDPAnswers: error in try of getDataFromDPs, src1"
-      );
-      console.log(err);
-      src1Err = err;
-    }
-  }
-  if (resJson._claim_sources.src2) {
-    try {
-      src2Claims = await sendToken(
-        resJson._claim_sources.src1.access_token,
-        resJson._claim_sources.src1.endpoint
-      );
-    } catch (err) {
-      console.log(
-        "passport.js:: ConsolidateDPAnswers: error in try of getDataFromDPs, src2"
-      );
-      console.log(err);
-      src2Err = err;
-    }
-  }
 
-  if (
-    (src1Err && src2Err) ||
-    (src1Err && !resJson._claim_sources.src2) ||
-    (src2Err && !resJson._claim_sources.src1)
-  ) {
-    let errResponse =
-      src1Err && src2Err
-        ? src1Err + " " + src2Err
-        : src1Err
-        ? src1Err
-        : src2Err;
-    reject(errResponse);
-  }
-  if (src1Claims === null && src2Claims === null) {
-    reject("No connected Data Providers can provide the requested info");
-  } else {
-    if (src1Claims && src2Claims) {
-      let merged = {};
-      Object.entries(src1Claims).forEach((entry) => {
-        let [key, value] = entry;
-        if (src1Claims[key] && src2Claims[key]) {
-          merged[key] = [src1Claims[key], src2Claims[key]];
-        }
-        if (src1Claims[key] && !src2Claims[key]) {
-          merged[key] = src1Claims[key];
-        }
-        if (src2Claims[key] && !src1Claims[key]) {
-          merged[key] = src2Claims[key];
-        }
-        resolve(merged);
-      });
-    } else {
-      if (src1Claims) resolve(src1Claims);
-      if (src2Claims) resolve(src2Claims);
-    }
-  }
-}
-
-async function sendToken(accessToken, endpoint) {
-  return new Promise(function (resolve, reject) {
-    const epParts = endpoint.split("/");
-    const host = epParts[2].split(":")[0];
-    const port = epParts[2].split(":")[1];
-    const path = "/" + epParts[3];
-
-    const options = {
-      hostname: host,
-      port: 8050,
-      path: path,
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-
-    const req = https.request(options, (res) => {
-      // console.log("statusCode:", res.statusCode);
-      // console.log("headers:", res.headers);
-
-      const chunks = [];
-      res.on("data", function (chunk) {
-        chunks.push(chunk);
-      });
-      res.on("end", function () {
-        const body = Buffer.concat(chunks);
-        const payload = body.toString();
-        const ks = fs.readFileSync("keys.json");
-        jose.JWK.asKeyStore(ks.toString()).then(async (keyStore) => {
-          //decrypt received data
-          console.log("===========>Response from DP::");
-          console.log(payload);
-          let errorPayload = {};
-          try {
-            errorPayload = JSON.parse(payload);
-          } catch (error) {
-            console.log("passport.js no error payload found! This is good");
-          }
-          if (payload.length === 0) {
-            console.log(
-              "passport.js no payload was found, empty string returned"
-            );
-            reject("DP replied with an empty response");
-          } else {
-            if (errorPayload.error) {
-              console.log("will reject with error");
-              reject(errorPayload.error);
-            } else {
-              console.log("===========><==================");
-              const decrypted = await JWE.createDecrypt(keyStore).decrypt(
-                payload
-              );
-              const body = Buffer.from(decrypted.plaintext);
-              const resJson = JSON.parse(body.toString());
-              console.log("******* DECRYPTED DP RESPONSE**************");
-              console.log(resJson)
-              resJson.verified_claims.verified_claims.forEach((element) => {
-                console.log("verified claim found");
-                console.log(element);
-                console.log(element.verification.evidence);
-              });
-              // console.log(resJson.verified_claims.verified_claims)
-              console.log("********************************************");
-              // add decrypted data to database
-              //
-              // repo.addDataToDb(resJson.verified_claims.verified_claims[0].claims);
-              if(resJson.verified_claims.verified_claims.length > 0){
-                resolve(resJson.verified_claims.verified_claims[0].claims);
-              }else{
-                reject("No Company data returned from the Data Provider " + resJson.iss)
-              }
-              
-            }
-          }
-        });
-      });
-    });
-
-    req.on("error", (e) => {
-      console.error(e);
-    });
-    req.end();
-  });
-}
 
 /*
  claims,
@@ -427,20 +189,23 @@ const addClaimsToStrategy = (
   client,
   jwt = null
 ) => {
-  let finalParams = {};
-  if (jwt) {
-    console.log(`passport.js: ${jwt}`);
-    finalParams = {
-      scope: "openid profile",
-      request: jwt,
-    };
-  } else {
-    finalParams = {
-      scope: "openid profile",
-      claims: claims,
-    };
-  }
-
+  
+  // if (jwt) {
+  //   console.log(`passport.js: ${jwt}`);
+  //   finalParams = {
+  //     scope: "openid profile",
+  //     request: jwt,
+  //   };
+  // } else {
+  //   finalParams = {
+  //     scope: "openid profile",
+  //     claims: claims,
+  //   };
+  // }
+  let finalParams = {
+    scope: "openid profile Palaemon_Service_Card",
+  };
+  
   const strategy = new Strategy(
     {
       client,
@@ -450,18 +215,33 @@ const addClaimsToStrategy = (
 
     async function (accessToken, refreshToken, profile, cb) {
       try {
-        let userData = await getDataFromDPs(
-          _user_info_request,
-          _user_info_port,
-          accessToken
-        );
-
-        // console.log("loged in user profile")
+        const options = {
+          hostname: "dss1.aegean.gr",//_user_info_request,
+          // port: _user_info_port,
+          path: "/auth/realms/grnetEidas/protocol/openid-connect/userinfo",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Length": "0",
+          },
+        };
+        const httpsReq = https.request(options, function (res) {
+          const chunks = [];
+          res.on("data", function (chunk) {
+            chunks.push(chunk);
+          });
+          res.on("end", function () {
+            const body = Buffer.concat(chunks);
+            console.log("******* USER INFO **********************");
+            console.log(body.toString());
+          });
+        });
+        httpsReq.end();
+  
+        // console.log("***********************!@@@@@@@@@@@@@@@((((((((((((((((((!!!!!!!!!")
         // console.log(profile)
-        // console.log("userData")
-        // console.log(userData)
 
-        return cb(null, { ...userData, ...profile.verified_claims.claims });
+        return cb(null, { profile });
       } catch (err) {
         console.log(err);
         return cb(null, { error: err });

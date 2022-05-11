@@ -4,6 +4,7 @@ const layoutStyle = {
     container: {
         zIndex: "12",
         color: "rgba(0, 0, 0, 0.87)",
+        
         ...containerAuto,
     },
     title: {
@@ -24,6 +25,7 @@ const layoutStyle = {
         background: "#FFFFFF",
         position: "relative",
         zIndex: "3",
+        
     },
     mainRaised: {
         margin: "-60px 30px 0px",

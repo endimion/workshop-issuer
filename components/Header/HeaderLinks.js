@@ -52,12 +52,12 @@ export default function HeaderLinks(props) {
       </ListItem>*/}
       <ListItem className={classes.listItem}>
         <Button
-            href="https://www.grids-cef.eu/"
+            href="https://palaemonproject.eu/"
           color="transparent"
           target="_blank"
           className={classes.navLink}
         >
-          <Icon className={classes.Apps}>apps</Icon> grids
+          <Icon className={classes.Apps}>apps</Icon> Palaemon
         </Button>
       </ListItem>
       {/*<ListItem className={classes.listItem}>

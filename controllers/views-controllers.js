@@ -6,33 +6,65 @@ import { updatePassportConfig } from "../config/serverConfig";
 import { v4 as uuidv4 } from "uuid";
 import { getSessionData, setOrUpdateSessionData } from "../services/redis";
 
+const landingPage = async (app, req, res) => {
+  return app.render(req, res, "/", req.query);
+};
 
-const companySelection = async (app, req, res) => {
-  let sessionId = uuidv4();
-  // console.log(`created the following session ${sessionId}`);
-  // read cookies
-  // console.log(req.cookies);
+const verifyUserDetailsPage = async (app, req, res, serverEndpoint) => {
+  let {
+    family_name,
+    given_name,
+    preferred_username,
+    palaemon_age,
+    palaemon_is_crew,
+    palaemon_role,
+    palaemon_gender,
+    palaemon_ticket_number,
+    palaemon_eid,
+  } = req.session.passport.user.profile;
+  if (family_name) req.sessionId = uuidv4();
 
-  let options = {
-    maxAge: 1000 * 60 * 15, // would expire after 15 minutes
-    httpOnly: true, // The cookie only accessible by the web server
-    signed: false, // Indicates if the cookie should be signed
+  let userDetails = {
+    Name: given_name.toUpperCase(),
+    Surname: family_name.toUpperCase(),
+    eID: palaemon_eid,
+    Birthdate: palaemon_age,
+    Gender: palaemon_gender,
+    Role: palaemon_role,
   };
 
-  let externalSessionId = req.query.extSessionId ? req.query.extSessionId : "";
-  console.log(`hey the external session id is:${req.query.extSessionId}`);
-  // Set cookie
-  res.cookie("sessionId", sessionId, options); // options is optional
-  res.cookie("extSessionId", externalSessionId, options);
-  res.cookie("kyb", "false", options); // options is optional
+  setOrUpdateSessionData(req.sessionId, "userDetails", userDetails);
 
-  if(req.query.country){
-    console.log("country send by Client " + req.query.country)
-    console.log("company name send by Client " + req.query.companyName)
-    console.log("company name send by Client " + req.query.legal_person_identifier)
+  req.endpoint = serverEndpoint;
+  req.userDetails = userDetails;
+
+  if (palaemon_is_crew === "true") {
+    req.userDetails["Crew-Member"] = palaemon_is_crew;
+  } else {
+    req.userDetails["Ticket Number"] = palaemon_ticket_number;
   }
 
-  return app.render(req, res, "/kyb/company-selection", req.query);
+  return app.render(req, res, "/verify-user", req.query);
+};
+
+const ticketInfo = async (app, req, res) => {
+  console.log(req.userDetails);
+  return app.render(req, res, "/ticketInfo", req.query);
+};
+
+const issueServiceCard = async (app, req, res, serverEndpoint) => {
+  req.userData = req.session.passport.user;
+  req.sessionId = req.query.sessionId;
+  req.endpoint = serverEndpoint;
+  // console.log("view-controllers:: issueSserviceCard")
+  // console.log(serverEndpoint)
+
+  // let claims = defaultClaims;
+  let redirectURI = process.env.CONNECTION_RESPONSE_URI
+    ? process.env.CONNECTION_RESPONSE_URI
+    : "http://localhost:5030/connection_response";
+
+  return app.render(req, res, "/issue_card", req.query);
 };
 
 const startLogin = async (app, req, res, serverPassport, oidcClient) => {
@@ -40,13 +72,11 @@ const startLogin = async (app, req, res, serverPassport, oidcClient) => {
   let companyName = req.body.companyName;
   let legalPersonIdentifier = req.body.legal_person_identifier;
   let email = req.body.email;
-  let country = req.body.country
+  let country = req.body.country;
 
   let claims = defaultClaims;
   let sessionId = req.cookies.sessionId;
 
-
-  
   await setOrUpdateSessionData(
     sessionId,
     "legalPersonIdentifier",
@@ -56,8 +86,8 @@ const startLogin = async (app, req, res, serverPassport, oidcClient) => {
   await setOrUpdateSessionData(sessionId, "email", email);
   await setOrUpdateSessionData(sessionId, "companyCountry", country);
 
-  
-  claims.userinfo.verified_claims.verification.evidence[0].registry.country.value=country 
+  claims.userinfo.verified_claims.verification.evidence[0].registry.country.value =
+    country;
   // console.log("!!!!!!!!!!! the claims that will be added!!!!!!!")
   // console.log(claims.userinfo.verified_claims.verification.evidence[0])
   if (companyName || legalPersonIdentifier) {
@@ -111,8 +141,8 @@ const validateRelationship = async (app, req, res, endpoint) => {
   req.companyName = companyName;
   req.legalPersonIdentifier = legalPersonIdentifier;
   req.sessionId = sessionId;
-  if(userDetails.error){
-    req.error = userDetails.error
+  if (userDetails.error) {
+    req.error = userDetails.error;
   }
   // console.log(userDetails)
   /*
@@ -145,8 +175,14 @@ const registryPrompt = async (app, req, res, endpoint) => {
   req.sessionId = sessionId;
   // req.extSessionId = req.cookies.extSessionId;
   req.keycloakRedirectURI = process.env.KEYCLOAK_REDIRECT_URI
-    ? `${process.env.KEYCLOAK_REDIRECT_URI}?extSessionId=${req.cookies.extSessionId}&userDetails=${encodeURIComponent(JSON.stringify(userDetails))}`
-    : `http://localhost:8081/auth/realms/kyb/rest/kybResponse?extSessionId=${req.cookies.extSessionId}&userDetails=${encodeURIComponent(JSON.stringify(userDetails))}`;
+    ? `${
+        process.env.KEYCLOAK_REDIRECT_URI
+      }?extSessionId=${sessionId}&userDetails=${encodeURIComponent(
+        JSON.stringify(userDetails)
+      )}`
+    : `http://localhost:8081/auth/realms/kyb/rest/kybResponse?extSessionId=${
+        req.cookies.extSessionId
+      }&userDetails=${encodeURIComponent(JSON.stringify(userDetails))}`;
   return app.render(req, res, "/kyb/registry-prompt", req.query);
 };
 
@@ -204,97 +240,6 @@ const issueVcKYBResponse = async (
   return app.render(req, res, "/vc/issue/kyb", req.query);
 };
 
-const issueEidas = async (app, req, res, endpoint) => {
-  //if we are redirected from mobile
-  if (req.query.sealSession) {
-    req.session.sealSession = req.query.sealSession;
-    let did = await getSealSessionData(
-      req.query.sealSession,
-      "DID",
-      0,
-      endpoints.sealSMUri,
-      endpoints.sealSMPort
-    );
-    console.log(
-      `for the session ${req.query.sealSession}  i got the DID data ${did}`
-    );
-    if (did) {
-      req.session.DID = true;
-    }
-  }
-  req.session.endpoint = endpoint;
-  // console.log("ENDPOINT");
-  // console.log(req.session.endpoint);
-  req.session.baseUrl = process.env.BASE_PATH;
-  req.eidasUri = endpoints.sealEidasUri;
-  req.eidasPort = endpoints.sealEidasPort;
-  let redirect = process.env.BASE_PATH
-    ? `${endpoint}/${process.env.BASE_PATH}/vc/issue/eidas/response`
-    : `${endpoint}/vc/issue/eidas/response`;
-  req.eidasRedirectUri = redirect;
-  //   console.log(req.eidasRedirectUri);
-  return app.render(req, res, "/vc/issue/eidas", req.query);
-};
-
-const handleIssueEidasResponse = async (app, req, res, endpoint) => {
-  const msToken = req.body.msToken;
-  // sessionId is provided by the caller
-  let sessionId = await validateToken(msToken);
-  let dataStore = JSON.parse(await getSealSessionData(sessionId, "dataStore"));
-  let eidasAttributes = dataStore.clearData.find((dataSet) => {
-    return dataSet.type === "eIDAS";
-  }).attributes;
-  let updatedUsersAttributes = parseSealAttributeSet(
-    eidasAttributes,
-    null,
-    "eidas"
-  );
-  // console.log(updatedUsersAttributes);
-  req.session.DID = true;
-  req.session.userData = updatedUsersAttributes;
-  req.session.sealSession = sessionId;
-
-  req.session.endpoint = endpoint;
-  req.session.baseUrl = process.env.BASE_PATH;
-  return app.render(req, res, "/vc/issue/eidas", req.query);
-};
-
-const issueMyID = async (app, req, res, endpoint) => {
-  // if (req.query.msToken) {
-  //   let sessionId = await validateToken(req.query.msToken);
-  //   let ds = await getSealSessionData(sessionId, "dataStore");
-  //   let did = await getSealSessionData(sessionId, "DID");
-  //   if (did) {
-  //     req.session.DID = true;
-  //   }
-  //   if (ds) {
-  //     let dataStore = JSON.parse(ds);
-  //     req.session.userData = makeUserDetails(dataStore);
-  //   }
-  //   req.session.sealSession = sessionId;
-  // }
-  //if we are redirected from mobile
-  if (req.query.sealSession) {
-    req.session.sealSession = req.query.sealSession;
-    let did = await getSessionData(req.query.sealSession, "DID");
-    if (did) {
-      req.session.DID = true;
-    }
-  }
-  req.session.endpoint = endpoint;
-  req.session.baseUrl = process.env.BASE_PATH;
-  req.eidasUri = endpoints.sealEidasUri;
-  req.eidasPort = endpoints.sealEidasPort;
-  req.edugainUri = endpoints.sealEdugainUri;
-  req.edugainPort = endpoints.sealEdugainPort;
-  let redirect = process.env.BASE_PATH
-    ? `${endpoint}/${process.env.BASE_PATH}/vc/issue/myID/response`
-    : `${endpoint}/vc/issue/myID/response`;
-  req.eidasRedirectUri = redirect;
-  console.log(req.eidasRedirectUri);
-  return app.render(req, res, "/vc/issue/myID", req.query);
-};
-
 const encode = function (unencoded) {
   return new Buffer(unencoded || "").toString("base64");
 };
@@ -304,13 +249,13 @@ const urlEncode = function (unencoded) {
 };
 
 export {
-  issueEidas,
-  handleIssueEidasResponse,
-  issueMyID,
-  companySelection,
   startLogin,
   validateRelationship,
   registryPrompt,
   issueKYB,
   issueVcKYBResponse,
+  landingPage,
+  verifyUserDetailsPage,
+  ticketInfo,
+  issueServiceCard,
 };

@@ -4,10 +4,12 @@ import GridItem from "../components/Grid/GridItem";
 import { getPath } from "../utils/pathHelper";
 import { makeStyles } from "@material-ui/core/styles";
 import styles from "styles/jss/nextjs-material-kit/components/formStyle.js";
-
-const useStyles = makeStyles(styles);
+import stylesCustom from "../styles/jss/palaemon.module.js";
 
 const QrPrompt = (props) => {
+  const tableStyles = { ...styles, ...stylesCustom };
+  const useStyles = makeStyles(tableStyles);
+  const classes = useStyles();
   let index = 0;
   // const permissions = props.permissions.map((permission) => {
   //   index++;
@@ -36,30 +38,38 @@ const QrPrompt = (props) => {
   }
 
   return (
-    <GridContainer>
+    <GridContainer
+      className={"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-4"}
+    >
       <GridItem xs={12} sm={12} md={12}>
-        <h2
-          class="MuiTypography-root MuiTypography-h3"
-          style={{
-            color: "#4d4d4d",
-            padding: "8px 0px 0px",
-            fontWeight: "normal",
-          }}
-        >
-          {topHeader}
-        </h2>
-        <h1
-          style={{
-            margin: "0px 0px 48px 0px",
-            marginTop: "0px",
-            marginRight: "0px",
-            marginBottom: "30px",
-            marginLeft: "0px",
-            fontSize: "2rem",
-          }}
-        >
-          {thePrompt}
-        </h1>
+        <div className={"MuiBox-root jss270"}>
+          <div className={"col-12 col-md-11 col-lg-6 pl-lg-0"}>
+            <div className={classes.jss369}>
+              <h6 className={classes.jss370} style={{ marginBottom: "0" }}>
+                Connect your Jolocom Smart Wallet 
+              </h6>
+            </div>
+
+            <h1
+              style={{
+                margin: "0px 0px 48px 0px",
+                fontSize: "3rem",
+                overflowWrap: "break-word",
+                display: "block",
+                marginBlockStart: "0.67em",
+                marginBlockEnd: "0.67em",
+                marginInlineStart: "0px",
+                marginInlineEnd: "0px",
+                fontWeight: "bold",
+                lineHeight: "1.43",
+                letterSpacing: "0.01071em",
+                marginTop: "0",
+              }}
+            >
+              {thePrompt}
+            </h1>
+          </div>
+        </div>
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
         <img
@@ -73,10 +83,7 @@ const QrPrompt = (props) => {
         />
       </GridItem>
       <GridItem xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
-        <p
-          className="MuiTypography-root  MuiTypography-body1"
-          style={{ fontSize: "1.1429rem" }}
-        >
+        <p className={classes.explanationParagraph}>
           Do not have the Jolocom app yet? Download it form your prefered app
           store
         </p>
@@ -88,7 +95,12 @@ const QrPrompt = (props) => {
           md={3}
           style={{ textAlign: "center", marginBottom: "1rem" }}
         ></GridItem>
-        <GridItem xs={12} sm={12} md={3} style={{ textAlign: "center" }}>
+        <GridItem
+          xs={12}
+          sm={12}
+          md={3}
+          style={{ textAlign: "center", marginBottom: "32px" }}
+        >
           <a
             href="https://apps.apple.com/us/app/jolocom-smartwallet/id1223869062"
             target="_blank"
@@ -131,8 +143,6 @@ const QrPrompt = (props) => {
       </GridContainer>
     </GridContainer>
   );
-
-   
 };
 
 export default QrPrompt;

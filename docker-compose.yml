@@ -4,37 +4,31 @@ services:
    redis:
     image: "redis:alpine"
     command: redis-server 
-    # volumes:
-    #  - $PWD/redis-data:/var/lib/redis
-    #   - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
      - REDIS_REPLICATION_MODE=master
     ports:
      - "6379:6379"
 
-   kyb:
-    image: endimion13/grids-kyb-custodian:0.0.1a
+   palaemon-embarkation:
+    image: endimion13/palaemon-embarkation:0.0.1c
     environment:
       NODE_ENV: "production"
-      ENDPOINT: http://localhost:5050
-      HTTPS_COOKIES: "false"
-      MEMCACHED_URL: memcached:11211
-      REDIS: redis
-      # BASE_PATH: "issuer"
-      ISSUER_URL: "https://vm.project-grids.eu:8180/auth/realms/grids"
-      OIDC_REDIRECT_URI: "http://localhost:5050/login/callback"
-      VC_REDIRECT_URI: "http://localhost:5050/vc/response/kyb"
-      USER_INFO: "vm.project-grids.eu"
+      # for SSL: KEY_PATH:
+      # for SSL: CERT_PATH:
+      # for SSL: CERT_PASS:
+      ENDPOINT: "http://localhost:5030"
+      PORT: "5030"
+      REDIS: "redis"
+      EMBARKATION_BACKEND_URI: "http://localhost:5030/addDevice"
+      ISSUER_URL: "https://dss1.aegean.gr/auth/realms/SSI"
+      OIDC_REDIRECT_URI: "http://localhost:5030/login/callback"
+      USER_INFO: "dss1.aegean.gr"
       USER_INFO_PORT: "8180"
-      MONGO: "mongodb+srv://root:root@cluster0.vtgm8.mongodb.net/KYB_CUSTODIAN?retryWrites=true&w=majority"
-      TTL: "300"
-      KEYCLOAK_REDIRECT_URI: "http://localhost:8081/auth/realms/kyb/rest/kybResponse"
-      ISSUE_REDIRECT_URI: "http://localhost:5050/vc/response/kyb"
-      JWKS_URI: "http://localhost:5050/jwks"
-      CERT_PASS: "pass"
-      LINK_REQ_END: http://vm.project-seal.eu:9050/link/request/submit
-    volumes: 
-      - /home/nikos/uPort/uportFullStack/uport-full-stack:/certs
+      # CONNECTION_RESPONSE_URI: http://localhost:5030/connection_response
+      DB_PROXY_URL: "http://localhost:8080"
+      KEYCLOAK_OAUTH_TOKEN: "https://dss1.aegean.gr/auth/realms/palaemon/protocol/openid-connect/token"
+      KEYCLOAK_OAUTH_CLIENT: "palaemonRegistration"
+      KEYCLOAK_OAUTH_SECRET: "bdbbb8d5-3ee7-4907-b95c-2baae17bd10f"
     ports:
-      - 5050:5000
+      - 5030:5030
 

@@ -40,7 +40,7 @@ const startKompanyLogin = async (app, req, res, serverPassport, oidcClient) => {
   await setOrUpdateSessionData(sessionId, "email", email);
   await setOrUpdateSessionData(sessionId, "companyCountry", country);
   await setOrUpdateSessionData(sessionId, "redirect_uri", redirectURI);
-  await setOrUpdateSessionData(sessionId, "kompanySessionId", externalSessionId);
+  await setOrUpdateSessionData(sessionId, "kompanySessionId", sessionId);
 
   let options = {
     maxAge: 1000 * 60 * 15, // would expire after 15 minutes
@@ -48,7 +48,7 @@ const startKompanyLogin = async (app, req, res, serverPassport, oidcClient) => {
     signed: false, // Indicates if the cookie should be signed
   };
   res.cookie("sessionId", sessionId, options); // options is optional
-  res.cookie("kompanySessionId", externalSessionId, options);
+  res.cookie("kompanySessionId", sessionId, options);
   res.cookie("kyb", "false", options); // options is optional
 
   claims.userinfo.verified_claims.verification.evidence[0].registry.country.value =

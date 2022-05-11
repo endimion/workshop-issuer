@@ -31,10 +31,13 @@ const initialState = {
   edugainRedirectUri: "",
   vcFailed: false,
   credQROffer: "",
-  
+
+  userDetails: null,
 };
 
 export const actionTypes = {
+  SAVE_USER_DETAILS: "SAVE_USER_DETAILS",
+
   GET_QR_AUTH_RESPONSE: "GET_QR_AUTH_RESPONSE",
   MAKE_QR_AUTH_REQUEST: "MAKE_QR_AUTH_REQUEST",
 
@@ -82,13 +85,15 @@ export const actionTypes = {
 // REDUCERS
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case actionTypes.SAVE_USER_DETAILS:
+      return { ...state, userStoreDetails: action.data };
 
     case actionTypes.JOLO_VC_GENERATED:
-      return {...state, credQROffer: action.data}
+      return { ...state, credQROffer: action.data };
 
     case actionTypes.VC_ISSUE_FAILED:
-      return {...state, vcFailed: true}
-      
+      return { ...state, vcFailed: true };
+
     case actionTypes.SET_EDUGAIN_REDIRECT_URI:
       return {
         ...state,
@@ -127,11 +132,11 @@ const reducer = (state = initialState, action) => {
         sealSession: action.data,
       };
 
-      case actionTypes.SET_SESSION_ID:
-        return {
-          ...state,
-          sessionId: action.data,
-        };
+    case actionTypes.SET_SESSION_ID:
+      return {
+        ...state,
+        sessionId: action.data,
+      };
 
     case actionTypes.SET_DID_TRUE:
       return {
@@ -340,7 +345,7 @@ export function updateSession(sessionStatus) {
 }
 
 export function setEndpoint(endpoint) {
-  console.log("store.js setting endpoint to " + endpoint)
+  // console.log("store.js setting endpoint to " + endpoint);
   return (dispatch) => {
     let toDispatch = {
       type: actionTypes.SET_ENDPOINT,
@@ -516,7 +521,6 @@ export function makeAndPushVC(
   };
 }
 
-
 // export function makeAndPushVCJolo(
 //   url,
 //   selectedAttributes,
@@ -527,7 +531,7 @@ export function makeAndPushVC(
 //   return (dispatch) => {
 //     let bodyFormData = new FormData();
 //     bodyFormData.set("data", selectedAttributes);
-    
+
 //     axios
 //       .post(url, {
 //         data: selectedAttributes,
@@ -547,12 +551,7 @@ export function makeAndPushVC(
 //   };
 // }
 
-export function requestVC(
-  url,
-  vcType,
-  sessionId,
-  isMobile = false
-) {
+export function requestVC(url, vcType, sessionId, isMobile = false) {
   return (dispatch) => {
     axios
       .post(url, {
@@ -561,8 +560,8 @@ export function requestVC(
         isMobile: isMobile,
       })
       .then((resp) => {
-        console.log("store.js requestVC_response")
-        console.log(resp)
+        console.log("store.js requestVC_response");
+        console.log(resp);
         dispatch({ type: actionTypes.JOLO_VC_GENERATED, data: resp.data.qr });
       })
       .catch((err) => {
@@ -573,10 +572,6 @@ export function requestVC(
   };
 }
 
-
-
-
-
 export function setSealSession(sessionId) {
   return (dispatch) => {
     dispatch({
@@ -585,7 +580,6 @@ export function setSealSession(sessionId) {
     });
   };
 }
-
 
 export function setSessionId(sessionId) {
   return (dispatch) => {
@@ -611,13 +605,15 @@ export function makeSealSession(baseUrl) {
 }
 
 export function makeOnlyConnectionRequest(
-  sealSession,
+  sessionId,
   baseUrl,
-  vcType ="didAuth",
+  endpoint,
+  vcType = "didAuth",
   isMobile
 ) {
   let postData = {
-    sealSession: sealSession,
+    endpoint: endpoint,
+    sessionId: sessionId,
     vcType: vcType,
   };
 
@@ -627,9 +623,6 @@ export function makeOnlyConnectionRequest(
   return (dispatch) => {
     dispatch({ type: actionTypes.MAKE_QR_AUTH_REQUEST });
     axios.post(`${baseUrl}/makeConnectionRequest`, postData).then((data) => {
-      console.log(
-        "store.js -- onlyConnectionRequest:: got the data form the server"
-      );
       return dispatch({
         type: actionTypes.GET_QR_AUTH_RESPONSE,
         data: data.data,
@@ -648,7 +641,9 @@ export function makeSealSessionWithDIDConnecetionRequest(
   );
   return (dispatch) => {
     let sessionId = "";
-    let postUrl = baseUrl?`${baseUrl}seal/start-session`:`/seal/start-session`
+    let postUrl = baseUrl
+      ? `${baseUrl}seal/start-session`
+      : `/seal/start-session`;
     axios
       .post(postUrl, {})
       .then((resp) => {
@@ -661,7 +656,9 @@ export function makeSealSessionWithDIDConnecetionRequest(
       .then((obj) => {
         // console.log("makeSealSessionWithDIDConnecetionRequest")
         console.log(`isMobile? ${isMobile}`);
-        let postUrl = baseUrl?`${baseUrl}makeConnectionRequest`:`/makeConnectionRequest`
+        let postUrl = baseUrl
+          ? `${baseUrl}makeConnectionRequest`
+          : `/makeConnectionRequest`;
         axios
           .post(postUrl, {
             sealSession: sessionId,
@@ -715,12 +712,20 @@ export function setEdugainRedirectUri(uri) {
   };
 }
 
-
 export function setEdugainUriPort(uri, port) {
   return (dispatch) => {
     dispatch({
       type: actionTypes.SET_EDUGAIN_URI_PORT,
       data: { uri: uri, port: port },
+    });
+  };
+}
+
+export function setUserDetails(userDetails) {
+  return (dispatch) => {
+    dispatch({
+      type: actionTypes.SAVE_USER_DETAILS,
+      data: userDetails,
     });
   };
 }
