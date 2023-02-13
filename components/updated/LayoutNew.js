@@ -85,10 +85,11 @@ export default function LayoutNew(props, { children, home }) {
         <Grid container spacing={4} sx={{ mt: 2 }}>
           <Grid item md={4} xs={10}>
             <img
-              src="/img/palaemon-logo-sticker.png"
+              src="/img/logoeruagreen2.png"
               alt=""
               className="kyb"
               width="100%"
+              style={{"width":"15%"}}
             />
           </Grid>
 
@@ -127,13 +128,8 @@ export default function LayoutNew(props, { children, home }) {
                     {props.activeStep + 1}. Authenticate
                   </Typography>
                   <Typography variant="body2" sx={{ mt: 4 }}>
-                    In order to access the service authenticate using your
-                    "Palaemon Service Card". This card was issued to you during
-                    your pre-Embarkation Registration process and is stored in
-                    your Jolocom SmartWallet app. To complete the authentication
-                    please click the "Access the Service" button and follow the
-                    instructions. Remember to have your Jolocom SmartWallet app
-                    handy.
+                    In order to generate your ERUA ID you will first need to authenticate using your home instituion (HEI) credentials. 
+                    Please not that only ERUA Alliance affiliated students will be allowed to do so. 
                     <br />
                   </Typography>
                   <Box my={3} sx={{ width: { md: "100%", xs: "50%" } }}>
@@ -157,7 +153,7 @@ export default function LayoutNew(props, { children, home }) {
                     {props.activeStep + 1}. Verify your Details
                   </Typography>
                   <Typography variant="body2" sx={{ mt: 4 }}>
-                    You have accessed the Palaemon Embarkation registration
+                    You have accessed the ERUA Issuer
                     service. <br />
                     Before providing the rest of your details, please ensure
                     your Personal Identification Information below is correct
@@ -182,13 +178,13 @@ export default function LayoutNew(props, { children, home }) {
                     Profile
                   </Typography>
                   <Typography variant="h5" component="div">
-                    {props.activeStep + 1}. Pair your Device
+                    {props.activeStep + 1}. Complete your Profile
                   </Typography>
                   <Typography variant="body2" sx={{ mt: 4 }}>
-                    In order to proceed please scan the provide QR code with
-                    your Palaemon APP. This will add the device to your profile
-                    and will enable you to gain personalized assistance in cases
-                    of emergency directly on your phone <br />
+                   Please fill in the following form by
+                   providing all the necessary details. These dataw
+                   will help us ensure you receive the best 
+                   assistance in case of an emergency <br />
                   </Typography>
                   <Box my={3}>
                     <img
@@ -226,6 +222,39 @@ export default function LayoutNew(props, { children, home }) {
                 </CardContent>
               </Card>
             ) : null}
+
+
+            {props.activeStep == 4 ? (
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography
+                    sx={{ fontSize: 14 }}
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Profile
+                  </Typography>
+                  <Typography variant="h5" component="div">
+                    {props.activeStep + 1}. Pair your Device
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 4 }}>
+                    In order to proceed please scan the provide QR code with
+                    your Palaemon APP. This will add the device to your profile
+                    and will enable you to gain personalized assistance in cases
+                    of emergency directly on your phone <br />
+                  </Typography>
+                  <Box my={3}>
+                    <img
+                      src="/connect.jpg"
+                      alt="information"
+                      width="100%"
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            ) : null}
+
+
           </Grid>
         </Grid>
 
@@ -236,9 +265,8 @@ export default function LayoutNew(props, { children, home }) {
           </Grid>
           <Grid item md={6} xs={8}>
             <Typography>
-              THE PALAEMON PROJECT HAS RECEIVED FUNDING FROM THE EUROPEAN
-              UNION’S HORIZON 2020 RESEARCH AND INNOVATION PROGRAMME UNDER GRANT
-              AGREEMENT NO 814962
+            The European Commission's support for the production of this publication does not constitute an endorsement of the contents, which reflect the views only of the authors, and the Commission
+             cannot be held responsible for any use which may be made of the information contained therein.
             </Typography>{" "}
             <br />
           </Grid>

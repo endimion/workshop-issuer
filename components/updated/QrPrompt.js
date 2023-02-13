@@ -1,4 +1,3 @@
-import GridContainer from "../Grid/GridContainer";
 import GridItem from "../Grid/GridItem";
 import { makeStyles } from "@material-ui/core/styles";
 import styles from "styles/jss/nextjs-material-kit/components/formStyle.js";
@@ -6,64 +5,81 @@ import stylesCustom from "styles/jss/palaemon.module.js";
 //AppBar
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 
 const QrPrompt = (props) => {
   const tableStyles = { ...styles, ...stylesCustom };
   const useStyles = makeStyles(tableStyles);
   const classes = useStyles();
-  let index = 0;
-  // const permissions = props.permissions.map((permission) => {
-  //   index++;
-  //   return (
-  //     <tr key={index}>
-  //       <td>{index}</td>
-  //       <td>{permission}</td>
-  //     </tr>
-  //   );
-  // });
-
   let thePrompt;
-  let topHeader;
+  let thePrompt2;
+  // let topHeader;
 
   if (props.isVCOffer) {
-    thePrompt =
-      "Scan the QR code with your Jolocom Wallet to receive your Credential";
-    topHeader = "Your protable KYB Credential is ready ";
+    thePrompt2 = ``;
+    thePrompt = "Tap the 'Open Wallet' button or Scan the QR to receive your ERUA ID";
+    // topHeader = "PALAEMON Verifiable Credential is ready ";
   } else {
-    thePrompt = "Scan the QR code with your Jolocom Wallet to proceed";
-    topHeader = "Before we begin";
+    thePrompt = `Scan the QR code with your Jolocom Wallet or Tap the button 
+    to pair your Wallet`;
+    thePrompt2 = ``;
+    // topHeader = "Before we begin";
   }
 
   if (props.prompt) {
     thePrompt = props.prompt;
   }
 
-  /*
-   <Typography sx={{ mt: 6, mb: 4 }}>
-        In order to register you must first Authenticate. Authentication is
-        handled via:
-         </Typography>
-  */
+  let walletInteraction = "";
+  if (!props.isMobile) {
+    walletInteraction = (
+      <img
+        className="img-fluid"
+        style={{
+          display: "block",
+          margin: "auto",
+          maxHeight: "21rem",
+        }}
+        src={props.qrData}
+      />
+    );
+  } else {
+    let deeplink = `https://jolocom.app.link/interact?token=${props.qrData}`;
+
+    const redirecttoNativeApp = () => {
+      document.location = deeplink;
+    };
+    walletInteraction = (
+      <GridItem xs={12} sm={12} md={12}>
+        <Box display="flex">
+          <Box m="auto">
+            <Button
+              variant="contained"
+              size="large"
+              type="submit"
+              onClick={redirecttoNativeApp}
+            >
+              Open Wallet
+            </Button>
+          </Box>
+        </Box>
+      </GridItem>
+    );
+  }
 
   return (
     <React.Fragment>
       <Typography variant="h5" sx={{ mt: 6, mb: 4 }}>
         {thePrompt}
       </Typography>
-
-      <Box fontWeight="fontWeightBold" display="inline">
-        <img
-          className="img-fluid"
-          style={{
-            display: "block",
-            margin: "auto",
-            maxHeight: "21rem",
-          }}
-          src={props.qrData}
-        />
+      <Typography variant="h7" sx={{ mt: 6, mb: 4 }}>
+        {thePrompt2}
+      </Typography>
+      <Box fontWeight="fontWeightBold" display="inline" style={{ marginTop: "1rem" }}>
+        {walletInteraction}
       </Box>
+
       <Typography sx={{ mt: 6, mb: 4 }} style={{ textAlign: "center" }}>
         Do not have the Jolocom app yet? Download it form your prefered app
         store
@@ -72,7 +88,7 @@ const QrPrompt = (props) => {
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>
             <Grid item xs={3}></Grid>
-            <Grid item xs={3}>
+            <Grid item s={3} xs={12}>
               {" "}
               <a
                 href="https://apps.apple.com/us/app/jolocom-smartwallet/id1223869062"
@@ -90,7 +106,7 @@ const QrPrompt = (props) => {
                 />
               </a>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item s={3} xs={12}>
               {" "}
               <a
                 href="https://apps.apple.com/us/app/jolocom-smartwallet/id1223869062"
@@ -102,8 +118,8 @@ const QrPrompt = (props) => {
                   style={{ display: "block", margin: "auto" }}
                   src={
                     props.baseUrl
-                      ? `${props.baseUrl}app-store.png`
-                      : "/app-store.png"
+                      ? `${props.baseUrl}play-store.png`
+                      : "/play-store.png"
                   }
                 />
               </a>

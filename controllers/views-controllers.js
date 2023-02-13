@@ -14,36 +14,27 @@ const verifyUserDetailsPage = async (app, req, res, serverEndpoint) => {
   let {
     family_name,
     given_name,
-    preferred_username,
-    palaemon_age,
-    palaemon_is_crew,
-    palaemon_role,
-    palaemon_gender,
-    palaemon_ticket_number,
-    palaemon_eid,
+    eduPersonUniqueId,
+    email,
+    schacHomeOrganization,
+    eduPersonAffiliation
   } = req.session.passport.user.profile;
   if (family_name) req.sessionId = uuidv4();
 
   let userDetails = {
     Name: given_name.toUpperCase(),
     Surname: family_name.toUpperCase(),
-    eID: palaemon_eid,
-    Birthdate: palaemon_age,
-    Gender: palaemon_gender,
-    Role: palaemon_role,
+    email: email,
+    eduPersonUniqueId: eduPersonUniqueId,
+    schacHomeOrganization: schacHomeOrganization,
+    eduPersonAffiliation: eduPersonAffiliation
   };
 
   setOrUpdateSessionData(req.sessionId, "userDetails", userDetails);
 
   req.endpoint = serverEndpoint;
   req.userDetails = userDetails;
-
-  if (palaemon_is_crew === "true") {
-    req.userDetails["Crew-Member"] = palaemon_is_crew;
-  } else {
-    req.userDetails["Ticket Number"] = palaemon_ticket_number;
-  }
-
+ 
   return app.render(req, res, "/verify-user", req.query);
 };
 
@@ -128,42 +119,7 @@ const startLogin = async (app, req, res, serverPassport, oidcClient) => {
   res.redirect(307, "/login");
 };
 
-const validateRelationship = async (app, req, res, endpoint) => {
-  let sessionId = req.cookies.sessionId;
-  let userDetails = await getSessionData(sessionId, "userDetails");
-  let legalPersonIdentifier = await getSessionData(
-    sessionId,
-    "legalPersonIdentifier"
-  );
-  let companyName = await getSessionData(sessionId, "companyName");
-  // console.log(`sessionId ${sessionId} details:`)
-  req.userDetails = userDetails;
-  req.companyName = companyName;
-  req.legalPersonIdentifier = legalPersonIdentifier;
-  req.sessionId = sessionId;
-  if (userDetails.error) {
-    req.error = userDetails.error;
-  }
-  // console.log(userDetails)
-  /*
-  {
-  lei: '529900ENKWV3BZ5GYL12',
-  address: null,
-  birthdate: '1965-01-01',
-  business_role: null,
-  trading_status: 'LIVE',
-  legal_name: '360kompany AG',
-  sub_jurisdiction: 'AT',
-  sic: '["7375 - Informationsabruf von entfernten Datenbanken","1450 - Media","73759903 - Remote data base information retrieval","63120 - Web portals"]',
-  given_name: 'claude',
-  vat_registration: 'ATU67091005',
-  legal_person_identifier: '375714x',
-  family_name: 'Phil',
-  personal_number: 'el/el/11111'
-}
-  */
-  return app.render(req, res, "/kyb/validate-relation", req.query);
-};
+ 
 
 const registryPrompt = async (app, req, res, endpoint) => {
   let sessionId = req.cookies.sessionId;
@@ -250,7 +206,6 @@ const urlEncode = function (unencoded) {
 
 export {
   startLogin,
-  validateRelationship,
   registryPrompt,
   issueKYB,
   issueVcKYBResponse,

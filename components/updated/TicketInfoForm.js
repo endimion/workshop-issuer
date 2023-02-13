@@ -2,68 +2,42 @@ import * as React from "react";
 import LayoutNew from "./LayoutNew";
 import Head from "next/head";
 //AppBar
-import Switch from "@mui/material/Switch";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
 //Stepper
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-
 import Grid from "@mui/material/Grid";
-
-//Card
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-
 //Forms
 import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 
-//Icons
-import InfoIcon from "@mui/icons-material/Info";
-import Tooltip from "@mui/material/Tooltip";
-
-//Table
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-// List
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-//
-import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function TicketInfoForm(props) {
-  // let nextButton =
+
+  
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" >
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   return (
     <LayoutNew home activeStep={2}>
@@ -77,25 +51,38 @@ export default function TicketInfoForm(props) {
 
       {props.errorMessage}
 
-      <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
+      {/* <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
         <Grid item sm={12} xs={12}>
           <FormGroup>
             <FormControlLabel name="isCrew" control={<Switch onChange={props.handleChange}/>} label="Crew member registration" />
           </FormGroup>
         </Grid>
-      </Grid>
+      </Grid> */}
+
+      <Snackbar
+        open={props.open}
+        autoHideDuration={6000}
+        // onClose={handleClose}
+        message="Note archived"
+        action={action}
+      />
 
       <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
         <Grid item sm={12} xs={12}>
           <TextField
+            required
             fullWidth
             name="ticketNumber"
             id="ticketNumber"
             placeholder="Fill in your Ticket Number"
             label="Ticket Number"
             variant="filled"
+            value={props.userDetails["Ticket Number"]}
             sx={{ mr: 4 }}
             onChange={props.handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
       </Grid>
@@ -103,6 +90,7 @@ export default function TicketInfoForm(props) {
       <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
         <Grid item sm={12} xs={12}>
           <TextField
+            required
             fullWidth
             name="email"
             id="email"
@@ -110,6 +98,7 @@ export default function TicketInfoForm(props) {
             label="Email Address"
             variant="filled"
             sx={{ mr: 4 }}
+            value={props.userDetails["email"]}
             onChange={props.handleChange}
           />
         </Grid>
@@ -118,6 +107,7 @@ export default function TicketInfoForm(props) {
       <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
         <Grid item sm={12} xs={12}>
           <TextField
+            required
             fullWidth
             name="phone_number"
             id="phone_number"
@@ -125,12 +115,36 @@ export default function TicketInfoForm(props) {
             label="Phone Number"
             variant="filled"
             sx={{ mr: 4 }}
+            value={props.userDetails["msisdn"]}
             onChange={props.handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
       </Grid>
 
       <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
+        <Grid item sm={12} xs={12}>
+          <TextField
+            required
+            fullWidth
+            name="bracelet"
+            id="bracelet"
+            placeholder="Fill in your Smart Bracelet ID"
+            label="Smart Bracelet ID"
+            variant="filled"
+            sx={{ mr: 4 }}
+            value={props.userDetails["bracelet"]}
+            onChange={props.handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      {/* <Grid container spacing={6} style={{ marginBottom: "1rem" }}>
         <Grid item sm={12} xs={12}>
           <TextField
             fullWidth
@@ -143,16 +157,17 @@ export default function TicketInfoForm(props) {
             onChange={props.handleChange}
           />
         </Grid>
-      </Grid>
+      </Grid> */}
 
       <Grid container spacing={6}>
         <Grid item sm={12} xs={12}>
           <TextField
+            required
             fullWidth
             name="emergency_contact_details"
             id="emergency_contact_details"
             placeholder="Fill in your emergency contact's phone number"
-            label="Emergency Contact"
+            label="Emergency Contact Number"
             variant="filled"
             sx={{ mr: 4 }}
             onChange={props.handleChange}
@@ -165,6 +180,7 @@ export default function TicketInfoForm(props) {
         </InputLabel>
         <Select
           labelId="demo-simple-select-label-country_of_residence"
+          required
           name="country_of_residence"
           id="country_of_residence"
           onChange={props.handleChange}
@@ -214,17 +230,21 @@ export default function TicketInfoForm(props) {
       <FormControl fullWidth sx={{ mt: 4 }}>
         <InputLabel id="demo-simple-select-label">Medical Condition</InputLabel>
         <Select
-          value={props.medical_condnitions}
           labelId="demo-simple-select-label-medical_condnitions"
+          required
           name="medical_condnitions"
           id="medical_condnitions"
           // placeholder="Company Country of Registration"
           label="Medical Condition"
           onChange={props.handleChange}
           variant="filled"
+          value={props.userDetails["health_status"]}
+          disabled
         >
           <MenuItem value={"none"}>None</MenuItem>
-          <MenuItem value={"equip_required"}>
+          <MenuItem value={""}>None</MenuItem>
+          <MenuItem value={'""'}>None</MenuItem>
+          {/* <MenuItem value={"equip_required"}>
             Medical Equipemnt Required during emergencies
           </MenuItem>
           <MenuItem value={"stretcher"}>
@@ -233,28 +253,34 @@ export default function TicketInfoForm(props) {
           <MenuItem value={"heavy_doses"}>
             Currently receiving heavy medication affecting cognitive
             capabilities
-          </MenuItem>
+          </MenuItem> */}
         </Select>
       </FormControl>
 
       <FormControl fullWidth sx={{ mt: 4 }}>
         <InputLabel id="demo-simple-select-label">Mobility Status</InputLabel>
         <Select
-          value={props.mobility_issues}
+          // value={props.mobility_issues}
+          value={props.userDetails["mobility_status"]}
           labelId="demo-simple-select-label-mobility_issues"
           name="mobility_issues"
           id="mobility_issues"
           // placeholder="Company Country of Registration"
-          label="Medical Condition"
+          label="Mobility Issues"
           onChange={props.handleChange}
           variant="filled"
+          required
+          disabled
         >
           <MenuItem value={"none"}>None</MenuItem>
-          <MenuItem value={"assisted_gait"}>
+          <MenuItem value={""}>-</MenuItem>
+          {/* <MenuItem value={"assisted_gait"}>
             Mobility via assisted gait
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem value={"walking_disability"}>Walking disability</MenuItem>
-          <MenuItem value={"severe_walking_disability"}>
+          <MenuItem value={"strecher"}>Strecher Required</MenuItem>
+          <MenuItem value={"none"}>None</MenuItem>
+          {/* <MenuItem value={"severe_walking_disability"}>
             Severe walking disability
           </MenuItem>
           <MenuItem value={"unable_to_walk"}>Unable to walk</MenuItem>
@@ -264,7 +290,7 @@ export default function TicketInfoForm(props) {
           </MenuItem>
           <MenuItem value={"hearing_impaired"}>
             Cognitive or developmental impairments
-          </MenuItem>
+          </MenuItem> */}
         </Select>
       </FormControl>
 
@@ -273,7 +299,8 @@ export default function TicketInfoForm(props) {
           Pregnency Details
         </InputLabel>
         <Select
-          value={props.pregnency_data}
+          // value={props.pregnency_data}
+          value={"none"}
           labelId="demo-simple-select-label"
           name="pregnency_data"
           id="pregnency_data"
@@ -281,20 +308,23 @@ export default function TicketInfoForm(props) {
           label="Medical Condition"
           onChange={props.handleChange}
           variant="filled"
+          required
+          disabled
         >
           <MenuItem value={"none"}>None</MenuItem>
-          <MenuItem value={"complicated"}>
+          <MenuItem value={""}>-</MenuItem>
+          {/* <MenuItem value={"complicated"}>
             Pregnancy with any form of increased risk of miscarriage
           </MenuItem>
           <MenuItem value={"normal"}>
             Pregnancy with no risk of miscarrige
-          </MenuItem>
+          </MenuItem> */}
         </Select>
       </FormControl>
 
       <FormControl fullWidth sx={{ mt: 4 }}>
         <InputLabel id="demo-simple-select-Preferred Language">
-          Preferred Language
+          Preferred Communication Language
         </InputLabel>
         <Select
           labelId="demo-simple-select-label-Preferred Language"
@@ -302,8 +332,9 @@ export default function TicketInfoForm(props) {
           id="preferred_language"
           onChange={props.handleChange}
           variant="filled"
+          required
         >
-          <MenuItem value={"AT"}>AUSTRIA</MenuItem>
+          {/* <MenuItem value={"AT"}>AUSTRIA</MenuItem>
 
           <MenuItem value={"BE"}>BELGIUM</MenuItem>
           <MenuItem value={"BG"}>BULGARIA</MenuItem>
@@ -318,9 +349,9 @@ export default function TicketInfoForm(props) {
 
           <MenuItem value={"FR"}>FRANCE</MenuItem>
 
-          <MenuItem value={"DE"}>GERMANY</MenuItem>
-          <MenuItem value={"GR"}>GREECE</MenuItem>
-          <MenuItem value={"HU"}>HUNGARY</MenuItem>
+          <MenuItem value={"DE"}>GERMANY</MenuItem> */}
+          <MenuItem value={"GR"}>Greek</MenuItem>
+          {/* <MenuItem value={"HU"}>HUNGARY</MenuItem>
 
           <MenuItem value={"IE"}>IRELAND</MenuItem>
           <MenuItem value={"IT"}>ITALY</MenuItem>
@@ -339,8 +370,8 @@ export default function TicketInfoForm(props) {
           <MenuItem value={"SK"}>SLOVAKIA</MenuItem>
 
           <MenuItem value={"SI"}>SLOVENIA</MenuItem>
-          <MenuItem value={"SE"}>SWEDEN</MenuItem>
-          <MenuItem value={"UK"}>UNITED KINGDOM</MenuItem>
+          <MenuItem value={"SE"}>SWEDEN</MenuItem> */}
+          <MenuItem value={"EN"}>English</MenuItem>
         </Select>
       </FormControl>
 

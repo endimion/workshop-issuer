@@ -17,19 +17,19 @@ export default function IndexForm(props) {
   return (
     <LayoutNew home activeStep={0}>
       <Head>
-        <title>Palaemon Embarkation Registration Service</title>
+        <title>ERUA ISSUER</title>
       </Head>
 
       <Typography variant="h5" sx={{ mt: 6, mb: 4 }}>
-        Palaemon Embarkation Registration Service
+        ERUA Issuer Service
       </Typography>
       <Typography sx={{ mt: 6, mb: 4 }}>
-        To complete your Registration please authenticate using:
+        To generate your ERUA ID please authenticate using:
         <Box fontWeight="fontWeightBold" display="inline">
           <List>
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemText primary="1. Your Palaemon Service Card" />
+                <ListItemText primary="1. Your Home Instituion Credentials" />
               </ListItemButton>
             </ListItem>
           </List>

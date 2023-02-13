@@ -552,6 +552,8 @@ export function makeAndPushVC(
 // }
 
 export function requestVC(url, vcType, sessionId, isMobile = false) {
+  //requestVC(url, vcType, uuid, isMobile)
+  console.log(`store js requestVC(${url}, ${vcType}, ${sessionId}, ${isMobile})`)
   return (dispatch) => {
     axios
       .post(url, {
@@ -617,6 +619,7 @@ export function makeOnlyConnectionRequest(
     vcType: vcType,
   };
 
+  console.log(`store.js makeOnlyConnectionRequest isMobile ${isMobile}`)  
   if (isMobile) {
     postData.isMobile = isMobile;
   }

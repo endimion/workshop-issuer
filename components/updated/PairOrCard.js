@@ -32,7 +32,7 @@ const PairOrCard = (props) => {
             fontSize: "2rem",
           }}
         >
-          Your Palaemon "Service Card" has been issued succesfully
+          Your ERUA ID has been issued succesfully
         </h1>
       </GridItem>
       <GridItem xs={12} sm={12} md={12}>
@@ -66,7 +66,7 @@ const PairOrCard = (props) => {
   if (props.qrData && !props.DID) {
     return (
       <div>
-        <QrPrompt qrData={props.qrData} baseUrl={props.baseUrl} />
+        <QrPrompt qrData={props.qrData} baseUrl={props.baseUrl}  isMobile={props.isMobile}/>
         <SSE
           uuid={props.uuid}
           endpoint={sseEndpoint}
@@ -84,6 +84,7 @@ const PairOrCard = (props) => {
             qrData={props.credQROffer}
             baseUrl={props.baseUrl}
             isVCOffer={true}
+            isMobile={props.isMobile}
           />
           <SSE
             uuid={props.uuid}

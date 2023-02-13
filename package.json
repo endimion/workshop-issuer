@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ENDPOINT='http://localhost:5000'  node -r esm palaemon-server.js",
+    "dev": "ENDPOINT='http://localhost:5000'  node -r esm server.js",
     "build": "next build",
-    "start": "node -r esm palaemon-server.js",
+    "start": "node -r esm server.js",
     "test": "mocha --require esm",
     "preinstall": "npx npm-force-resolutions"
   },
@@ -15,7 +15,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
-    "@jolocom/sdk": "^1.2.0",
+    "@jolocom/sdk": "^1.6.2",
     "@jolocom/sdk-storage-typeorm": "^4.2.0",
     "@jorgeferrero/stream-to-buffer": "^2.0.6",
     "@mui/icons-material": "^5.2.1",
@@ -63,6 +63,7 @@
     "next-images": "^1.8.1",
     "ngrok": "^3.3.0",
     "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.0",
     "node-jose": "^2.0.0",
     "node-rsa": "^1.1.1",
     "node-serialize": "^0.0.4",
@@ -71,6 +72,7 @@
     "passport": "^0.5.0",
     "passport-curity": "^1.1.0",
     "popper.js": "^1.16.1",
+    "prom-client": "^14.1.1",
     "qr-image": "^3.2.0",
     "qrcode": "^1.4.4",
     "qs": "^6.10.2",
@@ -112,7 +114,6 @@
   "exports": {
     ".": "./grids-dc-server.js",
     "./jsx-dev-runtime": "./jsx-dev-runtime.js",
-    "./jsx-runtime": "./jsx-runtime.js",
-    "./": "./"
+    "./jsx-runtime": "./jsx-runtime.js"
   }
 }

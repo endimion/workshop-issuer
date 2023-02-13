@@ -12,6 +12,7 @@ class VerifyUserView extends React.Component {
       isNextEnabled: false,
       error: null,
     };
+    this.handleContinue = this.handleContinue.bind(this);
   }
 
   static async getInitialProps({ reduxStore, req }) {
@@ -39,11 +40,19 @@ class VerifyUserView extends React.Component {
     }
   }
 
+  handleContinue(event) {
+    console.log("hey");
+    event.preventDefault();
+    console.log(this.props.userDetails);
+    window.location.href = `/issue_card?sessionId=${this.props.sessionId}`;
+  }
+
   render() {
     return (
       <VerifyUserComp
         userDetails={this.props.userDetails}
         sessionId={this.props.sessionId}
+        handleContinue={this.handleContinue}
       />
     );
   }

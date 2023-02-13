@@ -1,5 +1,6 @@
 import React from "react";
-import axios from "axios";
+import { withRouter, useRouter } from 'next/router';
+
 import {
   setSessionData,
   makeOnlyConnectionRequest,
@@ -9,19 +10,11 @@ import {
   setBaseUrl,
   setServerSessionId,
   completeDIDAuth,
-  setEidasUriPort,
-  setEidasRedirectUri,
   setSessionId,
 } from "../store";
 import { vcTypes } from "../config/vcTypes";
-import Layout from "../components/Layout";
 import { connect } from "react-redux";
-import { Button, Row, Col, Card, Container } from "react-bootstrap";
-import MyStepper from "../components/Stepper";
-import HomeButton from "../components/HomeButton";
-import IssueVCButton from "../components/IssueVCButton";
 import PairOrCard from "../components/updated/PairOrCard";
-import ConnectMobile from "../components/ConnectMobile";
 import isMobile from "../utils/isMobile";
 import Head from "next/head";
 import LayoutNew from "../components/updated/LayoutNew";
@@ -32,6 +25,9 @@ class IssueServiceCard extends React.Component {
     super(props);
     this.onConnected= this.onConnected.bind(this);
 
+    const router = this.props.router;
+    const { sessionId } = router.query;
+    this.sessionId = sessionId;
     this.dispatch = props.dispatch;
     this.isFetching = props.isFetching;
     this.sessionData = props.sessionData;
@@ -39,10 +35,10 @@ class IssueServiceCard extends React.Component {
       props.sessionData !== null && props.sessionData !== undefined;
   }
 
-  static async getInitialProps({ reduxStore, req }) {
+  static async getInitialProps({ reduxStore, req, query }) {
     let userData;
     let DIDOk;
-    let  sessionId = req.sessionId;
+    let  sessionId = req? req.query.sessionId:query.sessionId
     if (typeof window === "undefined") {
       userData = req.userData;
       reduxStore.dispatch(setEndpoint(req.endpoint));
@@ -61,6 +57,7 @@ class IssueServiceCard extends React.Component {
       reduxStore.dispatch(completeDIDAuth(sessionId));
     }
     if (sessionId) {
+      // console.log(`settting sessionId to ${sessionId}`)
       reduxStore.dispatch(setSessionId(sessionId));
     }
 
@@ -115,12 +112,13 @@ class IssueServiceCard extends React.Component {
         sealSession={this.props.sessionId}
         credQROffer={this.props.credQROffer}
         onConnected={this.onConnected}
+        isMobile= {isMobile()}
       />
     );
     return (
       <LayoutNew home activeStep={3}>
         <Head>
-          <title>Grids VC Issuer</title>
+          <title>PALAEMON Registration Service</title>
         </Head>
         {result}
       </LayoutNew>
@@ -155,8 +153,19 @@ const mapDispatchToProps = (dispatch) => {
     setEndPoint: (endpont) => {
       dispatch(setEndpoint(endpoint));
     },
-    makeConnectionRequest: (sessionId, baseUrl, vcType, isMobile) => {
-      dispatch(makeOnlyConnectionRequest(sessionId, baseUrl, vcType, isMobile));
+
+/*
+ this.props.makeConnectionRequest(
+        this.props.sessionId,
+        this.props.baseUrl,
+        this.props.endpoint,
+        "eidas",
+        isMobile()
+      );
+*/
+
+    makeConnectionRequest: (sessionId, baseUrl, endpoint, vcType, isMobile) => {
+      dispatch(makeOnlyConnectionRequest(sessionId, baseUrl,endpoint, vcType, isMobile));
     },
     didAuthOK: (uuid) => {
       dispatch(completeDIDAuth(uuid));
@@ -164,4 +173,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueServiceCard);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(IssueServiceCard));

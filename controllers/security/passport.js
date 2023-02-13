@@ -30,25 +30,17 @@ const getConfiguredPassport = async (
 ) => {
   let _issuer_url = process.env.ISSUER_URL
     ? process.env.ISSUER_URL
-    : "https://dss1.aegean.gr/auth/realms/SSI";
+    : "https://dss1.aegean.gr/auth/realms/erua-issuer";
 
     let _redirect_uri = isProduction
     ? process.env.OIDC_REDIRECT_URI
     : `http://localhost:5030/login/callback`;
-
-  let vc_redirect_uri = isProduction
-    ? process.env.VC_REDIRECT_URI
-    : `http://localhost:5030/vc/response/kyb`;
-
-  let jwks_uri = process.env.JWKS_URI
-    ? process.env.JWKS_URI
-    : `${serverEndpoint}/jwks`;
-
+ 
  
 
 
-  const dynClientId =  "test-ssi" 
-  const dynClientSecret = "5da95a22-1eb9-4026-9e5a-2367fa02f8e8" 
+  const dynClientId =  "erua-issuer" 
+  const dynClientSecret = "KNvK4ssSgYm7OwV1SbPyurLj7TZ2xiEX" 
 
   // Part 4b, discover Curity Server metadata and configure the OIDC client
   const client = await discoverAndCreateClient({
@@ -102,7 +94,7 @@ const getConfiguredPassport = async (
       path: "/auth/realms/grnetEidas/clients-registrations/openid-connect",
       method: "POST",
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI4OWZjYTFlNC03Zjc4LTRkNWEtODhkNC0zMzJlYjczNjliOGUifQ.eyJqdGkiOiIwZWRmOWIyYy02ZGZiLTQ5NzgtYWQ5Zi00NzdjODg3YzBhZTMiLCJleHAiOjAsIm5iZiI6MCwiaWF0IjoxNjM3MzE4MjQ5LCJpc3MiOiJodHRwczovL2RzczEuYWVnZWFuLmdyL2F1dGgvcmVhbG1zL2dybmV0RWlkYXMiLCJhdWQiOiJodHRwczovL2RzczEuYWVnZWFuLmdyL2F1dGgvcmVhbG1zL2dybmV0RWlkYXMiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.MkyA9bAPcxK7BWqFkV9SUU3CY38AUOWVJTbTLgG7PZY`,
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlZmEwNWNkNi1jMWFmLTQ1NjgtYjMzOS0zZGY4YTE4MjBjZGYifQ.eyJqdGkiOiIxYmU4MmZmNi1kYWI2LTQ1ZGMtOTA5NS0zNjRmNTg2Y2Q4YTkiLCJleHAiOjE3NDk3MjUwMjUsIm5iZiI6MCwiaWF0IjoxNjYzMzI1MDI1LCJpc3MiOiJodHRwczovL2RzczEuYWVnZWFuLmdyL2F1dGgvcmVhbG1zL3BhbGFlbW9uLWxvY2FsIiwiYXVkIjoiaHR0cHM6Ly9kc3MxLmFlZ2Vhbi5nci9hdXRoL3JlYWxtcy9wYWxhZW1vbi1sb2NhbCIsInR5cCI6IkluaXRpYWxBY2Nlc3NUb2tlbiJ9.pmyGfojHq5WFCmW0qYQsV2eLtYx_KKXxubZbv-emP6c`,
         "Content-Type": "application/json",
         "Content-Length": data.length,
       },
@@ -203,7 +195,7 @@ const addClaimsToStrategy = (
   //   };
   // }
   let finalParams = {
-    scope: "openid profile Palaemon_Service_Card",
+    scope: "openid profile",
   };
   
   const strategy = new Strategy(

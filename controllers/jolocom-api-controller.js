@@ -22,6 +22,10 @@ const makeConnectionRequestController = async (req, res, issuerAgent) => {
   // console.log(
   //   "jolocom-api-contorller, makeConnectionRquest callback::" + callback
   // );
+
+  console.log('jolocom-api-controllers:')
+  console.log(` sessionId ${sessionId}, vcType ${vcType}, endpoint ${endpoint}, isMobile ${isMobile} callback ${callback}`)
+
   let response = await makeConnectionRequest(
     sessionId,
     vcType,
@@ -86,6 +90,8 @@ const handleVCRequestController = async (req, res, issuerAgent, endpoint) => {
   // console.log("handleVCRequestController userData in session")
   // console.log(userData)
   
+  console.log(`sessionId ${sessionId} vcType ${vcType} isMobile ${isMobile} userData ${userData}`)
+
   let response = await makeCredentialOffer(
     sessionId,
     vcType,
@@ -106,7 +112,7 @@ const handleVCResponseController = async (req, res, issuerAgent) => {
   let sessionDetails = await getSessionData(sessionId) //, "userDetails");
   console.log("session details")
   console.log(sessionDetails);
-  let kybAttributes = JSON.parse(sessionDetails).profile;
+  let kybAttributes = JSON.parse(sessionDetails).userDetails;
   // console.log("user attributes::");
   // console.log(userAttributes);
   let userDID = JSON.parse(sessionDetails).DID;//await getSealSessionData(sealSessionId, "DID");

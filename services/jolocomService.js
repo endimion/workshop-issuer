@@ -62,25 +62,43 @@ const makeConnectionRequest = async (
 ) => {
   const authRequest = await issuerAgent.authRequestToken({
     callbackURL: `${callback}`,
-    description: "Connect with KYB Custodian?",
+    description: "Connect with PALAEMON?",
   });
-  // console.log(authRequest);
-  var code = qr.image(authRequest.encode(), {
-    type: "png",
-    ec_level: "H",
-    size: 10,
-    margin: 10,
-  });
-  let mediaType = "PNG";
-  let encodedQR = imageDataURI.encode(await streamToBuffer(code), mediaType);
-  // store in the sessionManager the (sealSession,issuerSession)
-  let sessionUpdated = await setOrUpdateSessionData(
-    sealSession,
-    "issuerSession",
-    sessionId
+
+  console.log("makeConnectionRequest");
+  console.log(
+    `session ${sealSession} vcType ${vcType} isMobile ${isMobile} callback ${callback}, sessionId ${sessionId}`
   );
-  //res.send({ qr: encodedQR, uuid: sealSession });
-  return { qr: encodedQR, uuid: sealSession };
+
+  if (!isMobile) {
+    // console.log(authRequest);
+    var code = qr.image(authRequest.encode(), {
+      type: "png",
+      ec_level: "H",
+      size: 10,
+      margin: 10,
+    });
+    let mediaType = "PNG";
+    let encodedQR = imageDataURI.encode(await streamToBuffer(code), mediaType);
+    // store in the sessionManager the (sealSession,issuerSession)
+    let sessionUpdated = await setOrUpdateSessionData(
+      sealSession,
+      "issuerSession",
+      sessionId
+    );
+    //res.send({ qr: encodedQR, uuid: sealSession });
+    return { qr: encodedQR, uuid: sealSession };
+  } else {
+    // console.log(authRequest);
+
+    console.log(
+      `jolocomService.js interaction token is deeplink ${{
+        qr: authRequest.encode(),
+        uuid: sealSession,
+      }}`
+    );
+    return { qr: authRequest.encode(), uuid: sealSession };
+  }
 };
 
 const connectionResponseServ = async (
@@ -109,10 +127,9 @@ const makeCredentialOffer = async (
 ) => {
   // let did = await getSessionData(sealSession, "DID");
   //store the attributes of the user in session to get them from the call of the wallet
-  console.log("jolocomService makeCredentialOffer")
-  console.log(userAttributes)
-  
-  
+  console.log("jolocomService makeCredentialOffer");
+  console.log(userAttributes);
+
   await setOrUpdateSessionData(
     sessionId,
     "user",
@@ -125,12 +142,12 @@ const makeCredentialOffer = async (
     callbackURL: callback,
     offeredCredentials: [
       {
-        type: "Palaemon_Service_Card",
+        type: "ERUA_ID",
         renderInfo: {
           renderAs: "document",
         },
         credential: {
-          name: "Palaemon_Service_Card",
+          name: "ERUA_ID",
           display: {
             properties: [
               { path: ["$.name"], label: "Name", value: "" },
@@ -139,32 +156,40 @@ const makeCredentialOffer = async (
                 label: "Surname",
                 value: "",
               },
-              { path: ["$.gender"], label: "Gender", value: "" },
               {
-                path: ["$.age"],
+                path: ["$.eduPersonUniqueId"],
+                label: "Identifier",
+                value: "",
+              },
+              {
+                path: ["$.email"],
+                label: "Contact email",
+                value: "",
+              },
+              {
+                path: ["$.dateOfBirth"],
                 label: "Date of Birth",
                 value: "",
               },
               {
-                path: ["$.ticketNumber"],
-                label: "Ticket",
-                value: "",
+                 //eduPersonPrimaryAffiliation
+                 path: ["$.eduPersonAffiliation"],
+                 label: "Affiliation",
+                 value: "",
               },
               {
-                path: ["$.medical_conditions"],
-                label: "Medical Conditions",
+                path: ["$.schacHomeOrganization"],
+                label: "Home Institution",
                 value: "",
-              },
+             },
               {
-                path: ["$.crewMember"],
-                label: "Is a Crew Member",
+                //eduPersonPrimaryAffiliation
+                path: ["$.ERUAMember"],
+                label: "Is ERUA MEMBER",
                 value: "",
-              },
-              {
-                path: ["$.role"],
-                label: "Onbard role",
-                value: "",
-              },
+             }
+             
+              
             ],
           },
         },
@@ -172,16 +197,21 @@ const makeCredentialOffer = async (
     ],
   };
 
-  let credentialOffer = await issuerAgent.credOfferToken(credentialOfferJSON);
-  let code = qr.image(credentialOffer.encode(), {
-    type: "png",
-    ec_level: "L",
-    size: 100,
-    margin: 0,
-  });
-  let mediaType = "PNG";
-  let encodedQR = imageDataURI.encode(await streamToBuffer(code), mediaType);
-  return { qr: encodedQR };
+  if (!isMobile) {
+    let credentialOffer = await issuerAgent.credOfferToken(credentialOfferJSON);
+    let code = qr.image(credentialOffer.encode(), {
+      type: "png",
+      ec_level: "L",
+      size: 100,
+      margin: 0,
+    });
+    let mediaType = "PNG";
+    let encodedQR = imageDataURI.encode(await streamToBuffer(code), mediaType);
+    return { qr: encodedQR };
+  } else {
+    let credentialOffer = await issuerAgent.credOfferToken(credentialOfferJSON);
+    return { qr: credentialOffer.encode()};
+  }
 };
 
 const makeVC = async (
@@ -192,8 +222,8 @@ const makeVC = async (
   issuerAgent
 ) => {
   const simpleExampleCredMetadata = {
-    type: ["Credential", "Palaemon_Service_Card"],
-    name: "Palaemon_Service_Card",
+    type: ["Credential", "ERUA_ID"],
+    name: "ERUA_ID",
     context: [
       {
         SimpleExample: `https://palaemon.eu/terms/${credType}`,
@@ -202,30 +232,34 @@ const makeVC = async (
       },
     ],
   };
-  
-  
-  console.log("JolocomService.js:: makeVC")
-  console.log(userData) 
-  
+
+  console.log("JolocomService.js:: makeVC");
+  console.log(userData);
+
   let claimValues = {};
 
   simpleExampleCredMetadata.context[0].family_name = "schema:name";
   simpleExampleCredMetadata.context[0].given_name = "schema:surname";
-  simpleExampleCredMetadata.context[0].legal_name = "schema:gender";
-  simpleExampleCredMetadata.context[0].date_of_birth =
-    "schema:date_of_birth";
-    simpleExampleCredMetadata.context[0].business_role = "schema:ticket";
-    simpleExampleCredMetadata.context[0].business_role = "schema:medical_conditions";
+  simpleExampleCredMetadata.context[0].email = "schema:email";
+  simpleExampleCredMetadata.context[0].date_of_birth = "schema:date_of_birth";
+  simpleExampleCredMetadata.context[0].eduPersonUniqueId = "schema:eduPersonUniqueId";
+  simpleExampleCredMetadata.context[0].schacHomeOrganization = "schema:schacHomeOrganization";
+  simpleExampleCredMetadata.context[0].eduPersonAffiliation = "schema:eduPersonAffiliation";
+  simpleExampleCredMetadata.context[0].ERUAMember = "schema:ERUAMember";
+
+  console.log("```````````")
+  console.log(userData)
+  console.log("```````````")
+  if (userData.Name) claimValues.name = userData.Name;
+  if (userData.Surname) claimValues.surname = userData.Surname;
+  if (userData.eduPersonUniqueId) claimValues.eduPersonUniqueId = userData.eduPersonUniqueId;
+  if (userData.schacHomeOrganization) claimValues.schacHomeOrganization = userData.schacHomeOrganization;
+  if (userData.eduPersonAffiliation) claimValues.eduPersonAffiliation = userData.eduPersonAffiliation;
+  if (userData.email) claimValues.email = userData.email;
+  claimValues.ERUAMember ="true";
+
   
-  if (userData.name) claimValues.name = userData.name;
-  if (userData.surname) claimValues.surname = userData.surname;
-  if (userData.gender) claimValues.gender = userData.gender;
-  if (userData.age)
-    claimValues.age = userData.age;
-  if (userData.ticketNumber) claimValues.ticketNumber = userData.ticketNumber;
-  if (userData.medical_condnitions) claimValues.medical_conditions = userData.medical_condnitions;
-  if(userData.role) claimValues.role = userData.role;
-  if(userData.isCrew) claimValues.crewMember = userData.isCrew;
+  console.log(claimValues)
 
   const offeredCredential = await issuerAgent.signedCredential(
     {
@@ -243,8 +277,9 @@ const makeVC = async (
       ])
     ).encode(),
   };
-  console.log("jolocomService.js makeVC:: the credential VC is");
-  console.log(credentialOffer);
+  // console.log("jolocomService.js makeVC:: the credential VC is");
+  // console.log(credentialOffer);
+  console.log("jolocomService.js makeVC:: made a the VC");
   return credentialOffer;
 };
 
