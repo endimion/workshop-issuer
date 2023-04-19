@@ -9,7 +9,7 @@ services:
     ports:
      - "6379:6379"
 
-   palaemon-embarkation:
+   erua-issuer:
     image: endimion13/palaemon-embarkation:0.0.1c
     environment:
       NODE_ENV: "production"
@@ -19,16 +19,10 @@ services:
       ENDPOINT: "http://localhost:5030"
       PORT: "5030"
       REDIS: "redis"
-      EMBARKATION_BACKEND_URI: "http://localhost:5030/addDevice"
       ISSUER_URL: "https://dss1.aegean.gr/auth/realms/SSI"
       OIDC_REDIRECT_URI: "http://localhost:5030/login/callback"
       USER_INFO: "dss1.aegean.gr"
       USER_INFO_PORT: "8180"
-      # CONNECTION_RESPONSE_URI: http://localhost:5030/connection_response
-      DB_PROXY_URL: "http://localhost:8080"
-      KEYCLOAK_OAUTH_TOKEN: "https://dss1.aegean.gr/auth/realms/palaemon/protocol/openid-connect/token"
-      KEYCLOAK_OAUTH_CLIENT: "palaemonRegistration"
-      KEYCLOAK_OAUTH_SECRET: "bdbbb8d5-3ee7-4907-b95c-2baae17bd10f"
     ports:
       - 5030:5030
 

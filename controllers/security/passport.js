@@ -30,7 +30,7 @@ const getConfiguredPassport = async (
 ) => {
   let _issuer_url = process.env.ISSUER_URL
     ? process.env.ISSUER_URL
-    : "https://dss1.aegean.gr/auth/realms/erua-issuer";
+    : "https://localhost:8081/auth/realms/erua";
 
     let _redirect_uri = isProduction
     ? process.env.OIDC_REDIRECT_URI
@@ -39,20 +39,20 @@ const getConfiguredPassport = async (
  
 
 
-  const dynClientId =  "erua-issuer" 
-  const dynClientSecret = "KNvK4ssSgYm7OwV1SbPyurLj7TZ2xiEX" 
+  const clinteId =  "erua-issuer" 
+  const clientSecret = "b272587a-c842-4e35-9ded-09782195c198" 
 
   // Part 4b, discover Curity Server metadata and configure the OIDC client
   const client = await discoverAndCreateClient({
     issuerUrl: _issuer_url,
-    clientID: dynClientId,
-    clientSecret: dynClientSecret,
+    clientID: clinteId,
+    clientSecret: clientSecret,
     redirectUris: [_redirect_uri],
   });
 
   let _user_info_request = process.env.USER_INFO
     ? process.env.USER_INFO
-    : "dss1.aegean.gr";
+    : "localhost";
   let _user_info_port = process.env.USER_INFO_PORT
     ? process.env.USER_INFO_PORT
     : "8180";

@@ -85,11 +85,11 @@ export default function LayoutNew(props, { children, home }) {
         <Grid container spacing={4} sx={{ mt: 2 }}>
           <Grid item md={4} xs={10}>
             <img
-              src="/img/logoeruagreen2.png"
+              src="/img/erua.png"
               alt=""
               className="kyb"
               width="100%"
-              style={{"width":"15%"}}
+              style={{"width":"50%"}}
             />
           </Grid>
 
