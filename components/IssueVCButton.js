@@ -20,10 +20,11 @@ class IssueVCButton extends React.Component {
 
   click() {
     const vcType = this.props.vcType;
-    console.log("issueVCButton:: click called with " + this.props.uuid)
-    let url = this.props.baseUrl
-      ? `${this.props.baseUrl}issueVC`
-      : `/issueVC`;
+    // console.log("issueVCButton:: click called with " + this.props.uuid)
+    // let url = this.props.baseUrl
+    //   ? `${this.props.baseUrl}/issueVC`
+    //   : `/issueVC`;
+    let url = "issueVC"
     console.log(
       `will send request for ${url} with  type ${vcType} isMobile ${isMobile()}`
     );

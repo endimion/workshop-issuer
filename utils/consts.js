@@ -1,0 +1,32 @@
+module.exports = Object.freeze({
+  PORT: parseInt(process.env.PORT, 10) || 5030,
+  NODE_ENV: process.env.NODE_ENV,
+  KEY_PATH: process.env.KEY_PATH,
+  CERT_PATH: process.env.CERT_PATH,
+  CERT_PASS: process.env.CERT_PASS,
+  ENDPOINT: process.env.ENDPOINT,
+  USER_INFO: process.env.USER_INFO ? process.env.USER_INFO : "localhost",
+  REDIS: process.env.REDIS ? process.env.REDIS : "localhost",
+  HTTPS_COOKIES: process.env.HTTPS_COOKIES,
+  BASE_PATH: process.env.BASE_PATH,
+  SENDER_ID: process.env.SENDER_ID,
+  CONNECTION_RESPONSE_URI: process.env.CONNECTION_RESPONSE_URI,
+  
+  USER_INFO_PORT: process.env.USER_INFO_PORT
+    ? process.env.USER_INFO_PORT
+    : "8180",
+  ISSUER_URL: process.env.ISSUER_URL
+    ? process.env.ISSUER_URL
+    : "https://localhost:8081/auth/realms/erua",
+  OIDC_REDIRECT_URI: process.env.OIDC_REDIRECT_URI
+    ? process.env.OIDC_REDIRECT_URI
+    : `http://localhost:5030/login/callback`,
+
+  OIDC_CLIENT: process.env.OIDC_CLIENT? process.env.OIDC_CLIENT : "erua-issuer",
+  OIDC_CLIENT_SECRET: process.env.OIDC_CLIENT_SECRET? process.env.OIDC_CLIENT_SECRET : "TXTBJVXwWvZvEOuoxC4yRF6srcUtd0Ho",
+
+
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
+});
+

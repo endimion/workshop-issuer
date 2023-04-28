@@ -12,12 +12,7 @@ const startSession = async (app, req, res, endpoint) => {
 };
 
 const makeEidasRedirectionToken = async (req, res, endpoint) => {
-  let sender = process.env.SENDER_ID ? process.env.SENDER_ID : "eIDAS-IdP";
-  let receiver = process.env.RECEIVER_ID ? process.env.SENDER_ID : "eIDAS-IdP";
-  let sessionId = req.query.sessionId;
-  // sessionId is provided by the caller
-  let result = await makeRedirectionToken(sessionId, sender, receiver);
-  return result;
+  
 };
 
 const updateSession = async (req, res, endpoint) => {

@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
+import Link from "next/link";
 
 const QrPrompt = (props) => {
   const tableStyles = { ...styles, ...stylesCustom };
@@ -18,7 +19,8 @@ const QrPrompt = (props) => {
 
   if (props.isVCOffer) {
     thePrompt2 = ``;
-    thePrompt = "Tap the 'Open Wallet' button or Scan the QR to receive your ERUA ID";
+    thePrompt =
+      "Tap the 'Open Wallet' button or Scan the QR to receive your ERUA ID";
     // topHeader = "PALAEMON Verifiable Credential is ready ";
   } else {
     thePrompt = `Scan the QR code with your Jolocom Wallet or Tap the button 
@@ -60,7 +62,8 @@ const QrPrompt = (props) => {
               type="submit"
               onClick={redirecttoNativeApp}
             >
-              Open Wallet
+              <Link href={deeplink}>Open Wallet</Link>
+              
             </Button>
           </Box>
         </Box>
@@ -76,7 +79,11 @@ const QrPrompt = (props) => {
       <Typography variant="h7" sx={{ mt: 6, mb: 4 }}>
         {thePrompt2}
       </Typography>
-      <Box fontWeight="fontWeightBold" display="inline" style={{ marginTop: "1rem" }}>
+      <Box
+        fontWeight="fontWeightBold"
+        display="inline"
+        style={{ marginTop: "1rem" }}
+      >
         {walletInteraction}
       </Box>
 

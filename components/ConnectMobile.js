@@ -14,17 +14,14 @@ const ConnectMobile = (props) => {
     );
   });
 
-  let sseEndpoint = props.baseUrl
-      ? `${props.endpoint}/${props.baseUrl}`
-      : props.endpoint;
-
   return (
     <Container>
       <SSE
         uuid={props.uuid}
-        endpoint={sseEndpoint}
         serverSessionId={props.serverSessionId}
         sealSession={props.sealSession}
+        basePath={props.baseUrl}
+        eventEndpoint={props.eventEndpoint}
       />
 
       <Row>

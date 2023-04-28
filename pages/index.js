@@ -17,8 +17,10 @@ import CustomInputNew from "components/CustomInput/CustomInputNew.js";
 import styles from "styles/jss/nextjs-material-kit/components/formStyle.js";
 import stylesCustom from "../styles/jss/palaemon.module.js";
 
+const constants = require("../utils/consts")
+
 export default function Home() {
   return (
-    <IndexForm/>
+    <IndexForm />
   )
 }

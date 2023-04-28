@@ -52,6 +52,19 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import CustomStepper from "./stepper.js";
+import { connect } from "mongoose";
+const constants = require("../../utils/consts")
+
+let eruaLogonURL = constants.BASE_PATH? `/${constants.BASE_PATH}/img/erua.png` :"/img/erua.png" 
+let patternURL = constants.BASE_PATH? `/${constants.BASE_PATH}/pattern.svg` :"/pattern.svg" 
+let profileURL = constants.BASE_PATH? `/${constants.BASE_PATH}/profile.svg` :"/profile.svg" 
+let signURL = constants.BASE_PATH? `/${constants.BASE_PATH}/sign.svg` :"/sign.svg" 
+let connectURL = constants.BASE_PATH? `/${constants.BASE_PATH}/connect.jpg` :"/connect.jpg" 
+let euFlagURL = constants.BASE_PATH? `/${constants.BASE_PATH}/eu_flag.jpg` :"/eu_flag.jpg" 
+let mailURL = constants.BASE_PATH? `/${constants.BASE_PATH}/mail.svg` :"/mail.svg" 
+let linkedInURL = constants.BASE_PATH? `/${constants.BASE_PATH}/linkedin.svg` :"/linkedin.svg" 
+
+
 
 export default function LayoutNew(props, { children, home }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -85,7 +98,7 @@ export default function LayoutNew(props, { children, home }) {
         <Grid container spacing={4} sx={{ mt: 2 }}>
           <Grid item md={4} xs={10}>
             <img
-              src="/img/erua.png"
+              src={eruaLogonURL}
               alt=""
               className="kyb"
               width="100%"
@@ -95,7 +108,7 @@ export default function LayoutNew(props, { children, home }) {
 
           <Grid item xs={6} sx={{ display: { xs: "none", md: "block" } }}>
             <img
-              src="/pattern.svg"
+              src={patternURL}
               alt=""
               className="Pattern"
               width="750px"
@@ -133,7 +146,7 @@ export default function LayoutNew(props, { children, home }) {
                     <br />
                   </Typography>
                   <Box my={3} sx={{ width: { md: "100%", xs: "50%" } }}>
-                    <img src="/profile.svg" alt="provile-img" width="100%" />
+                    <img src={profileURL} alt="provile-img" width="100%" />
                   </Box>
                 </CardContent>
               </Card>
@@ -161,7 +174,7 @@ export default function LayoutNew(props, { children, home }) {
                   </Typography>
 
                   <Box my={3}>
-                    <img src="/sign.svg" alt="sign-img" width="100%" />
+                    <img src={signURL} alt="sign-img" width="100%" />
                   </Box>
                 </CardContent>
               </Card>
@@ -188,7 +201,7 @@ export default function LayoutNew(props, { children, home }) {
                   </Typography>
                   <Box my={3}>
                     <img
-                      src="/connect.jpg"
+                      src={connectURL}
                       alt="information"
                       width="100%"
                     />
@@ -217,7 +230,7 @@ export default function LayoutNew(props, { children, home }) {
                   </Typography>
 
                   <Box my={3}>
-                    <img src="/connect.jpg" alt="done" width="100%" />
+                    <img src={connectURL} alt="done" width="100%" />
                   </Box>
                 </CardContent>
               </Card>
@@ -245,7 +258,7 @@ export default function LayoutNew(props, { children, home }) {
                   </Typography>
                   <Box my={3}>
                     <img
-                      src="/connect.jpg"
+                      src={connectURL}
                       alt="information"
                       width="100%"
                     />
@@ -261,7 +274,7 @@ export default function LayoutNew(props, { children, home }) {
         {/* footer */}
         <Grid container spacing={5} sx={{ pt: 12, mb: 2 }}>
           <Grid item md={2} xs={4}>
-            <img src="/eu_flag.jpg" style={{ maxWidth: "8rem" }} alt="cef" />
+            <img src={euFlagURL} style={{ maxWidth: "8rem" }} alt="cef" />
           </Grid>
           <Grid item md={6} xs={8}>
             <Typography>
@@ -283,14 +296,14 @@ export default function LayoutNew(props, { children, home }) {
 
               <Grid sx={{ mr: 1 }}>
                 <a href="mailto:i4mlab@uaegean">
-                  <img src="/mail.svg" height="35" className="facebook" />
+                  <img src={mailURL} height="35" className="facebook" />
                 </a>{" "}
               </Grid>
               <Grid sx={{ mr: 1 }}>
                 {" "}
                 <a href="https://www.linkedin.com/showcase/grids-kyb-custodian">
                   <img
-                    src="/linkedin.svg"
+                    src={linkedInURL}
                     height="35"
                     alt="linkedin"
                     className="twitter"

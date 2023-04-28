@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 //Stepper
 import Button from "@mui/material/Button";
+import Link from "next/link";
 
 //Card
 
@@ -19,8 +20,6 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 // List
-
-import Link from "next/link";
 
 function mapName(name) {
   switch (name) {
@@ -53,6 +52,8 @@ const VerifyUser = (props) => {
       createData(mapName(attributeName), props.userDetails[attributeName])
     );
   });
+
+  let contunueLink = `/issue_card?sessionId=${props.sessionId}`;
 
   return (
     <LayoutNew home alert={!props.userDetails} activeStep={1}>
@@ -95,9 +96,10 @@ const VerifyUser = (props) => {
             console.log("hey");
             event.preventDefault();
             console.log(props.userDetails);
-            window.location.href = `/issue_card?sessionId=${props.sessionId}`;
+            window.location.href = props.basePath? `/${props.basePath}/issue_card?sessionId=${props.sessionId}`:`/issue_card?sessionId=${props.sessionId}`;
           }}
         >
+          {/* <Link href={contunueLink}>Continue</Link> */}
           Continue
         </Button>
       </Box>

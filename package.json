@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ENDPOINT='http://localhost:5000' PORT='5030' ISSUER_URL='https://four-sloths-yell-37-6-117-204.loca.lt/auth/realms/ERUA' node -r esm server.js",
+    "dev": "ENDPOINT='http://localhost:5000' PORT='5030' ISSUER_URL='https://dss.aegean.gr/auth/realms/erua-issuer'  node -r esm server.js",
+    "dev2": "ENDPOINT='http://localhost:5000' PORT='5030' ISSUER_URL='https://dss.aegean.gr/auth/realms/erua-issuer' BASE_PATH='erua-issuer' node -r esm server.js",
     "build": "next build",
     "start": "node -r esm server.js",
     "test": "mocha --require esm",

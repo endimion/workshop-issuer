@@ -2,11 +2,15 @@ import QrPrompt from "./QrPrompt";
 import SSE from "./Sse.js";
 import GridContainer from "../components/Grid/GridContainer";
 import GridItem from "../components/Grid/GridItem";
+const constants = require('../utils/consts')
 
 const PairOrCard = (props) => {
-  let sseEndpoint = props.baseUrl
-    ? `${props.endpoint}/${props.baseUrl}`
-    : props.endpoint;
+
+
+  let finishImgUrl = constants.BASE_PATH? `/${constants.BASE_PATH}/finished.png` :"/finished.png" 
+
+
+  
   
   let vcSentToUser = (
     <GridContainer>
@@ -37,7 +41,7 @@ const PairOrCard = (props) => {
       <GridItem xs={12} sm={12} md={12}>
         <img
           alt=""
-          src="/finished.png"
+          src= {finishImgUrl}
           style={{
             maxWidth: "15rem",
             display: "block",
@@ -68,7 +72,6 @@ const PairOrCard = (props) => {
         <QrPrompt qrData={props.qrData} baseUrl={props.baseUrl} />
         <SSE
           uuid={props.uuid}
-          endpoint={sseEndpoint}
           serverSessionId={props.serverSessionId}
           sealSession={props.sealSession}
         />
@@ -85,7 +88,6 @@ const PairOrCard = (props) => {
           />
           <SSE
             uuid={props.uuid}
-            endpoint={sseEndpoint}
             serverSessionId={props.serverSessionId}
             sealSession={props.sealSession}
           />

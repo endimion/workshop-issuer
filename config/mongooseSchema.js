@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-const mongoURI = process.env.MONGO
-  ? process.env.MONGO
+const constants = require("../utils/consts")
+const mongoURI = constants.MONGO
+  ? constants.MONGO
   : "mongodb+srv://root:root@cluster0.vtgm8.mongodb.net/KYB_CUSTODIAN?retryWrites=true&w=majority";
 mongoose.connect(mongoURI).catch((error) => console.log(error));
 

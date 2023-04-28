@@ -11,6 +11,7 @@ import {
   setServerSessionId,
   completeDIDAuth,
   setSessionId,
+  setServerPort
 } from "../store";
 import { vcTypes } from "../config/vcTypes";
 import { connect } from "react-redux";
@@ -47,6 +48,8 @@ class IssueServiceCard extends React.Component {
       reduxStore.dispatch(setServerSessionId(req.sessionId));
       reduxStore.dispatch(setSessionId(req.sessionId));
       DIDOk = req.DID;
+      reduxStore.dispatch(setBaseUrl(req.basePath));
+      reduxStore.dispatch(setServerPort(req.port));
     }
 
     //this way the userSessionData gets set in all settings
@@ -59,6 +62,8 @@ class IssueServiceCard extends React.Component {
     if (sessionId) {
       // console.log(`settting sessionId to ${sessionId}`)
       reduxStore.dispatch(setSessionId(sessionId));
+      reduxStore.dispatch(setBaseUrl(req.basePath));
+      reduxStore.dispatch(setServerPort(req.port));
     }
 
     //returned value here is getting mered with the mapstatetoprops
@@ -68,7 +73,9 @@ class IssueServiceCard extends React.Component {
       qrData: reduxStore.getState().qrData,
       vcSent: false,
       sessionId: reduxStore.getState().sessionId,
-      endpoint: reduxStore.getState().endpoint
+      endpoint: reduxStore.getState().endpoint,
+      basePath: reduxStore.getState().baseUrl,
+      serverPort: reduxStore.getState().serverPort,
     };
   }
 
@@ -97,6 +104,8 @@ class IssueServiceCard extends React.Component {
         baseUrl={this.props.baseUrl}
         uuid={this.props.sessionId}
         vcType={vcTypes.kyb}
+        serverPort={this.props.serverPort}
+        endpoint={this.props.endpoint}
       />
     );
 
@@ -113,12 +122,14 @@ class IssueServiceCard extends React.Component {
         credQROffer={this.props.credQROffer}
         onConnected={this.onConnected}
         isMobile= {isMobile()}
+        serverPort={this.props.serverPort}
+        endpoint={this.props.endpoint}
       />
     );
     return (
       <LayoutNew home activeStep={3}>
         <Head>
-          <title>PALAEMON Registration Service</title>
+          <title>ERUA Issuer</title>
         </Head>
         {result}
       </LayoutNew>
@@ -139,6 +150,7 @@ function mapStateToProps(state) {
     sessionId: state.sessionId,
     endpoint: state.endpoint,
     credQROffer: state.credQROffer,
+    serverPort: state.serverPort,
   };
 }
 
@@ -154,21 +166,18 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(setEndpoint(endpoint));
     },
 
-/*
- this.props.makeConnectionRequest(
-        this.props.sessionId,
-        this.props.baseUrl,
-        this.props.endpoint,
-        "eidas",
-        isMobile()
-      );
-*/
-
+ 
     makeConnectionRequest: (sessionId, baseUrl, endpoint, vcType, isMobile) => {
       dispatch(makeOnlyConnectionRequest(sessionId, baseUrl,endpoint, vcType, isMobile));
     },
     didAuthOK: (uuid) => {
       dispatch(completeDIDAuth(uuid));
+    },
+    setBaseUrl: (url) => {
+      dispatch(setBaseUrl(url));
+    },
+    setServerPort: (port) => {
+      dispatch(setServerPort(port));
     },
   };
 };

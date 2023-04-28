@@ -33,6 +33,7 @@ const initialState = {
   credQROffer: "",
 
   userDetails: null,
+  serverPort: "",
 };
 
 export const actionTypes = {
@@ -80,11 +81,16 @@ export const actionTypes = {
   VC_ISSUE_FAILED: "VC_ISSUE_FAILED",
 
   JOLO_VC_GENERATED: "JOLO_VC_GENERATED",
+
+  SET_SERVER_PORT: "SERVER_PORT",
 };
 
 // REDUCERS
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case actionTypes.SET_SERVER_PORT:
+      return { ...state, serverPort: action.data };
+    
     case actionTypes.SAVE_USER_DETAILS:
       return { ...state, userStoreDetails: action.data };
 
@@ -625,7 +631,8 @@ export function makeOnlyConnectionRequest(
   }
   return (dispatch) => {
     dispatch({ type: actionTypes.MAKE_QR_AUTH_REQUEST });
-    axios.post(`${baseUrl}/makeConnectionRequest`, postData).then((data) => {
+    let  path = baseUrl?`/${baseUrl}/makeConnectionRequest`:"/makeConnectionRequest"
+    axios.post(path, postData).then((data) => {
       return dispatch({
         type: actionTypes.GET_QR_AUTH_RESPONSE,
         data: data.data,
@@ -732,6 +739,16 @@ export function setUserDetails(userDetails) {
     });
   };
 }
+
+export function setServerPort(port) {
+  return (dispatch) => {
+    dispatch({
+      type: actionTypes.SET_SERVER_PORT,
+      data: port,
+    });
+  };
+}
+
 
 export const initializeStore = (preloadedState = initialState) => {
   return createStore(

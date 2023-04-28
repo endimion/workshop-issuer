@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import VerifyUserComp from "components/updated/VerifyUserComp.js";
-import { setUserDetails, setSessionId, setEndpoint } from "../store.js";
+import { setUserDetails, setSessionId, setEndpoint, setBaseUrl } from "../store.js";
+const constants = require("../utils/consts.js")
 
 class VerifyUserView extends React.Component {
   constructor(props) {
@@ -24,18 +25,24 @@ class VerifyUserView extends React.Component {
         reduxStore.dispatch(setUserDetails(req.userDetails));
         reduxStore.dispatch(setSessionId(req.sessionId));
         reduxStore.dispatch(setEndpoint(req.endpoint));
+        reduxStore.dispatch(setBaseUrl(req.basePath));
       }
       // mapstatetoprops overrides these values if they match
       return {
         userDetails: req.userDetails,
+        basePath: req.basePath
       };
     } else {
+        console.log("QWERQ@#$Q@#$ " + req.basePath)
+
       if (sessionId) {
         reduxStore.dispatch(setSessionId(sessionId));
+        reduxStore.dispatch(setBaseUrl(req.basePath));
       }
       return {
         sessionId: reduxStore.getState().sessionId,
         endpoint: reduxStore.getState().endpoint,
+        basePath: reduxStore.getState().baseUrl,
       };
     }
   }
@@ -53,6 +60,7 @@ class VerifyUserView extends React.Component {
         userDetails={this.props.userDetails}
         sessionId={this.props.sessionId}
         handleContinue={this.handleContinue}
+        basePath={this.props.basePath}
       />
     );
   }
@@ -63,6 +71,7 @@ function mapStateToProps(state) {
     userDetails: state.userStoreDetails, //these were added to the redux store by verify-user.js
     sessionId: state.sessionId,
     endpoint: state.endpoint,
+    basePath: state.baseUrl
   };
 }
 
@@ -70,6 +79,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setEndPoint: (endpont) => {
       dispatch(setEndpoint(endpoint));
+    },
+    setBaseUrl: (url) => {
+      dispatch(setBaseUrl(url));
     },
   };
 };

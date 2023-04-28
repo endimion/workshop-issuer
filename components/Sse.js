@@ -10,7 +10,11 @@ class SSE extends React.Component {
   }
 
   componentDidMount() {
-    this.eventSource = new EventSource(`/events`);
+    //let eventSourcePath = this.props.baseUrl? `/${this.props.baseUrl}/issuer-events`:"/issuer-events";
+    let eventSourcePath = this.props.endpoint.indexOf("ngrok") < 0?
+    "https://dss.aegean.gr/issuer-events":// this.props.endpoint+":"+this.props.serverPort+"/issuer-events":
+    "/issuer-events";
+    this.eventSource = new EventSource(eventSourcePath);
     //listening for "event" type events
     // as set by the server at ::  res.write(`event: event\n`);
 

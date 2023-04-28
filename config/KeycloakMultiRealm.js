@@ -1,5 +1,6 @@
 const Keycloak = require("keycloak-connect");
 const compose = require("compose-middleware").compose;
+const constants = require("../utils/consts")
 
 
 function KeycloakMultiRealm(config, keycloakConfigs) {
@@ -10,8 +11,8 @@ function KeycloakMultiRealm(config, keycloakConfigs) {
     let url = req.originalUrl; 
     // for example, you could get the realmName from the path
     // console.log(`the url is ${req.originalUrl}`);
-    if (process.env.BASE_PATH) {
-      url = url.replace(`/${process.env.BASE_PATH}/`,'')
+    if (constants.BASE_PATH) {
+      url = url.replace(`/${constants.BASE_PATH}/`,'')
     }
     return url.split("/")[1];
   };

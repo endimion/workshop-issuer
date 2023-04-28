@@ -1,3 +1,4 @@
+const constants = require("../utils/consts")
 const ngrok = require("ngrok");
 const fs = require("fs");
 const {
@@ -15,13 +16,13 @@ const configServer = (
 ) => {
   return new Promise((resolve, reject) => {
     if (
-      process.env.KEY_PATH &&
-      process.env.CERT_PATH &&
-      process.env.CERT_PASS
+      constants.KEY_PATH &&
+      constants.CERT_PATH &&
+      constants.CERT_PASS
     ) {
-      let key = fs.readFileSync(process.env.KEY_PATH);
-      let cert = fs.readFileSync(process.env.CERT_PATH);
-      let passphrase = process.env.CERT_PASS;
+      let key = fs.readFileSync(constants.KEY_PATH);
+      let cert = fs.readFileSync(constants.CERT_PATH);
+      let passphrase = constants.CERT_PASS;
 
       https
         .createServer(
@@ -34,7 +35,7 @@ const configServer = (
         )
         .listen(port, (err) => {
           if (err) throw err;
-          serverConfiguration.endpoint = process.env.ENDPOINT;
+          serverConfiguration.endpoint = constants.ENDPOINT;
 
           console.log(`running with SSL and port is ${port}`);
           return serverConfiguration.endpoint;
@@ -47,7 +48,7 @@ const configServer = (
           console.log(
             `running in production is ${isProduction} and port is ${port}`
           );
-          serverConfiguration.endpoint = process.env.ENDPOINT;
+          serverConfiguration.endpoint = constants.ENDPOINT;
           console.log(`configuring the passport`);
           let { passport, client } = await getConfiguredPassport(
             isProduction,
@@ -84,11 +85,11 @@ const configServer = (
 };
 
 const updatePassportConfig = (passport, claims, client, jwt = null) => {
-  let _user_info_request = process.env.USER_INFO
-    ? process.env.USER_INFO
+  let _user_info_request = constants.USER_INFO
+    ? constants.USER_INFO
     : "vm.project-grids.eu";
-  let _user_info_port = process.env.USER_INFO_PORT
-    ? process.env.USER_INFO_PORT
+  let _user_info_port = constants.USER_INFO_PORT
+    ? constants.USER_INFO_PORT
     : "8180";
   console.log(`serverConfig.js::updatePassportConfig:: jtw: ${jwt}`);
   addClaimsToStrategy(

@@ -10,6 +10,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import Link from "next/link";
 
 export default function IndexForm(props) {
   let longText = "";
@@ -42,11 +43,14 @@ export default function IndexForm(props) {
           variant="contained"
           size="large"
           type="submit"
-          onClick={() => {
-            window.location = "/login";
-          }}
+          // onClick={() => {
+          //   console.log(constants.BASE_PATH? `/${constants.BASE_PATH}/login`:"login")
+          //   window.location = props.basePath? `/${props.basePath}/login`:"login"//"/login";
+          // }}
         >
-          Access the service
+          <Link href="login">
+             <a>Access the service</a>
+          </Link>
         </Button>
       </Box>
     </LayoutNew>

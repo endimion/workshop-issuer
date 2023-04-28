@@ -17,11 +17,7 @@ import { jwksController } from "./controllers/jwks-controllers";
 import { subscribe } from "./services/sse-service";
 import { searchDbController } from "./controllers/seach-db-controllers";
 import { saveUserToDB } from "./controllers/dBControllers";
-import {
-  pairDeviceController,
-  getQRCode,
-  addDevice,
-} from "./controllers/device-controllers";
+
 
 // import winston from "winston";
 // import expressWinston from "express-winston";
@@ -33,19 +29,19 @@ const fs = require("fs");
 const next = require("next");
 const jsesc = require("jsesc");
 const request = require("request-promise");
-const port = parseInt(process.env.PORT, 10) || 5030;
-const dev = process.env.NODE_ENV !== "production";
+const constants = require("./utils/consts");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const axios = require("axios");
 const moment = require("moment");
+const dev = constants.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const cookieParser = require("cookie-parser");
 const { passportController } = require("./controllers/security/passport");
 
 // server session cache config
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = constants.NODE_ENV === "production";
 const SESSION_CONF = getSessionConfg(isProduction);
 
 const Prometheus = require("prom-client");
@@ -87,19 +83,25 @@ app.prepare().then(async () => {
   //CONTROLLERS
 
   //sse
-  server.get(["/events", "/kyb/events"], subscribe);
+  server.get(["/issuer-events", `\/${constants.BASE_PATH}/issuer-events`], subscribe);
 
   //view
-  server.get(["/", "/register"], async (req, res) => {
-    console.log("/register");
-    return landingPage(app, req, res, serverConfiguration.endpoint);
-  });
+  server.get(
+    ["/", "/register", `\/${constants.BASE_PATH}/`],
+    async (req, res) => {
+      console.log("/register");
+      return landingPage(app, req, res, serverConfiguration.endpoint);
+    }
+  );
 
-  server.get(["/login_success"], async (req, res) => {
-    console.log("/login_success");
-    // console.log(req.session.passport.user)
-    return verifyUserDetailsPage(app, req, res, serverConfiguration.endpoint);
-  });
+  server.get(
+    ["/login_success", `\/${constants.BASE_PATH}/login_success`],
+    async (req, res) => {
+      console.log("/login_success");
+      // console.log(req.session.passport.user)
+      return verifyUserDetailsPage(app, req, res, serverConfiguration.endpoint);
+    }
+  );
 
   server.get(["/pair-device"], async (req, res) => {
     console.log("/pair-device");
@@ -128,11 +130,20 @@ app.prepare().then(async () => {
     saveUserToDB(req, res);
   });
 
-  server.get(["/issue_card", "/issue"], async (req, res) => {
-    console.log("/issue");
-    // console.log(req.session.passport.user); //works ok to fetch the userdetails
-    issueServiceCard(app, req, res, serverConfiguration.endpoint);
-  });
+  server.get(
+    [
+      "/issue_card",
+      "/issue",
+      `\/${constants.BASE_PATH}/issue`,
+      `\/${constants.BASE_PATH}/issue_card`,
+    ],
+    async (req, res) => {
+      console.log("/issue");
+      // console.log(req.session.passport.user); //works ok to fetch the userdetails
+      req.port=constants.PORT
+      issueServiceCard(app, req, res, serverConfiguration.endpoint);
+    }
+  );
 
   // Metrics endpoint
   server.get("/metrics", async (req, res) => {
@@ -145,14 +156,22 @@ app.prepare().then(async () => {
 
   // session
   server.post(
-    ["/start-session", "/palaemon/start-session"],
+    [
+      "/start-session",
+      "/palaemon/start-session",
+      `\/${constants.BASE_PATH}/start-session`,
+    ],
     async (req, res) => {
       console.log("/start-session");
       await startSession(app, req, res, serverConfiguration.endpoint);
     }
   );
   server.post(
-    ["/update-session", "/palaemon/update-session"],
+    [
+      "/update-session",
+      "/palaemon/update-session",
+      `\/${constants.BASE_PATH}/update-session`,
+    ],
     async (req, res) => {
       console.log("/update-session ");
       res.send(await updateSession(req, res, serverConfiguration.endpoint));
@@ -161,7 +180,11 @@ app.prepare().then(async () => {
 
   //jolo
   server.post(
-    ["/makeConnectionRequest", "/palaemon/makeConnectionRequest"],
+    [
+      "/makeConnectionRequest",
+      "/palaemon/makeConnectionRequest",
+      `\/${constants.BASE_PATH}/makeConnectionRequest`,
+    ],
     async (req, res) => {
       console.log("/makeConnectionRequest");
       makeConnectionRequestController(req, res, issuerAgent);
@@ -169,26 +192,37 @@ app.prepare().then(async () => {
   );
 
   server.post(
-    ["/connectionResponse", "/palaemon/connectionResponse"],
+    [
+      "/connectionResponse",
+      "/palaemon/connectionResponse",
+      `\/${constants.BASE_PATH}/connectionResponse`,
+    ],
     async (req, res) => {
       console.log("/connectionResponse");
       handleConnectionResponse(req, res, issuerAgent);
     }
   );
 
-  server.post(["/issueVC", "/palaemon/issueVC"], async (req, res) => {
-    console.log("/issueVC");
-    // console.log(req.body)
-    handleVCRequestController(
-      req,
-      res,
-      issuerAgent,
-      serverConfiguration.endpoint
-    );
-  });
+  server.post(
+    ["/issueVC", "/palaemon/issueVC", `\/${constants.BASE_PATH}/issueVC`],
+    async (req, res) => {
+      console.log("/issueVC");
+      // console.log(req.body)
+      handleVCRequestController(
+        req,
+        res,
+        issuerAgent,
+        serverConfiguration.endpoint
+      );
+    }
+  );
 
   server.post(
-    ["/offerResponse", "/palaemon/offerResponse"],
+    [
+      "/offerResponse",
+      "/palaemon/offerResponse",
+      `\/${constants.BASE_PATH}/offerResponse`,
+    ],
     async (req, res) => {
       console.log("/offerResponse");
       handleVCResponseController(req, res, issuerAgent);
@@ -200,7 +234,7 @@ app.prepare().then(async () => {
   let { endpoint, passport, client } = await configServer(
     server,
     https,
-    port,
+    constants.PORT, //port,
     isProduction,
     handle,
     serverConfiguration
@@ -208,7 +242,7 @@ app.prepare().then(async () => {
   let serverPassport = passport;
   let oidcClient = client;
   // grids login flow, all /login*.* uris will be handles by the passportController router
-  server.use("/login", passportController);
+  server.use(["/login", `\/${constants.BASE_PATH}/login`], passportController);
 
   server.use("/jwks", jwksController);
   server.use("/query", searchDbController);

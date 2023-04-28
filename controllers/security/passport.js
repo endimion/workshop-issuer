@@ -8,8 +8,8 @@ const { Strategy, discoverAndCreateClient } = require("passport-curity");
 const https = require("https");
 const jose = require("node-jose");
 const fs = require("fs");
+const constants = require("../../utils/consts");
 import { defaultClaims } from "../../config/defaultOidcClaims";
-
 
 // Part 3, create a JWKS
 const keyStore = jose.JWK.createKeyStore();
@@ -28,19 +28,14 @@ const getConfiguredPassport = async (
   serverEndpoint,
   claims = defaultClaims
 ) => {
-  let _issuer_url = process.env.ISSUER_URL
-    ? process.env.ISSUER_URL
-    : "https://localhost:8081/auth/realms/erua";
+  let _issuer_url = constants.ISSUER_URL;
 
-    let _redirect_uri = isProduction
-    ? process.env.OIDC_REDIRECT_URI
+  let _redirect_uri = isProduction
+    ? constants.OIDC_REDIRECT_URI
     : `http://localhost:5030/login/callback`;
- 
- 
 
-
-  const clinteId =  "erua-issuer" 
-  const clientSecret = "b272587a-c842-4e35-9ded-09782195c198" 
+  const clinteId = constants.OIDC_CLIENT; //"erua-issuer"
+  const clientSecret = constants.OIDC_CLIENT_SECRET; //"b272587a-c842-4e35-9ded-09782195c198"
 
   // Part 4b, discover Curity Server metadata and configure the OIDC client
   const client = await discoverAndCreateClient({
@@ -50,12 +45,8 @@ const getConfiguredPassport = async (
     redirectUris: [_redirect_uri],
   });
 
-  let _user_info_request = process.env.USER_INFO
-    ? process.env.USER_INFO
-    : "localhost";
-  let _user_info_port = process.env.USER_INFO_PORT
-    ? process.env.USER_INFO_PORT
-    : "8180";
+  let _user_info_request = constants.USER_INFO;
+  let _user_info_port = constants.USER_INFO_PORT;
   // Part 4c, configure the passport strategy
   addClaimsToStrategy(
     claims,
@@ -87,7 +78,7 @@ const getConfiguredPassport = async (
       userinfo_encrypted_response_enc: "A128CBC-HS256",
     });
 
-    let USER_INFO = process.env.USER_INFO
+    let USER_INFO = constants.USER_INFO;
     const options = {
       hostname: USER_INFO,
       // port: 8180,
@@ -110,8 +101,8 @@ const getConfiguredPassport = async (
         });
         res.on("end", function () {
           const body = Buffer.concat(chunks);
-          console.log("passpppport.js client registration response")
-          console.log(body.toString())
+          console.log("passpppport.js client registration response");
+          console.log(body.toString());
           resolve(body.toString());
         });
       });
@@ -127,42 +118,46 @@ const getConfiguredPassport = async (
   router.use(passport.initialize());
   router.use(passport.session());
   // Part 2, configure authentication endpoints
-  router.get("/", passport.authenticate("curity")); //listens to /login
-  router.post("/", passport.authenticate("curity")); //listens to /login
+  // router.get("/", passport.authenticate("curity")); //listens to /login
+  // router.post("/", passport.authenticate("curity")); //listens to /login
+  router.get(
+    "/",
+    passport.authenticate("curity", {
+      successRedirect: "/" + constants.BASE_PATH + "/login_success",
+      failureRedirect: "/" + constants.BASE_PATH + "/login_failure",
+    })
+  ); //listens to /login
+  router.post(
+    "/",
+    passport.authenticate("curity", {
+      successRedirect: "/" + constants.BASE_PATH + "/login_success",
+      failureRedirect: "/" + constants.BASE_PATH + "/login_failure",
+    })
+  ); //listens to /login
+
   router.get(
     "/callback",
     async (req, res, next) => {
-      // console.log(req)
-      // console.log("***************")
-      // console.log(req.sessionStore.sessions)
-      // console.log(req.sessionStore.sessions)
-      // console.log(req.sessionStore)
-
-      // let key = Object.keys(req.sessionStore.sessions)[0];
-      // let oidcSession = JSON.parse(req.sessionStore.sessions[key])[
-      //   "oidc:vm.project-grids.eu"
-      // ];
-      // req.session["oidc:vm.project-grids.eu"] = oidcSession;
       next();
     },
-    passport.authenticate("curity", { failureRedirect: "/login" }), //listens to /login/callback
+    passport.authenticate("curity", {
+      successRedirect: "/" + constants.BASE_PATH + "/login_success",
+      failureRedirect: "/" + constants.BASE_PATH + "/login",
+    }), //listens to /login/callback
+
     async (req, res) => {
       console.log("passport.js:: will now redirect to the view");
-      
+
       console.log("PASSPORT.JS REQ.USEr");
       console.log(req.user);
-      let redirect_uri="/login_success"
-      
+      let redirect_uri = "/login_success";
+
       console.log(`passport.js:: will redirect to ${redirect_uri}`);
       res.redirect(redirect_uri);
     }
   );
   return { passport: passport, client: client };
 };
-
-
-
-
 
 /*
  claims,
@@ -181,7 +176,6 @@ const addClaimsToStrategy = (
   client,
   jwt = null
 ) => {
-  
   // if (jwt) {
   //   console.log(`passport.js: ${jwt}`);
   //   finalParams = {
@@ -197,7 +191,7 @@ const addClaimsToStrategy = (
   let finalParams = {
     scope: "openid profile",
   };
-  
+
   const strategy = new Strategy(
     {
       client,
@@ -208,7 +202,7 @@ const addClaimsToStrategy = (
     async function (accessToken, refreshToken, profile, cb) {
       try {
         const options = {
-          hostname: "dss1.aegean.gr",//_user_info_request,
+          hostname: "dss1.aegean.gr", //_user_info_request,
           // port: _user_info_port,
           path: "/auth/realms/grnetEidas/protocol/openid-connect/userinfo",
           method: "GET",
@@ -229,7 +223,7 @@ const addClaimsToStrategy = (
           });
         });
         httpsReq.end();
-  
+
         // console.log("***********************!@@@@@@@@@@@@@@@((((((((((((((((((!!!!!!!!!")
         // console.log(profile)
 

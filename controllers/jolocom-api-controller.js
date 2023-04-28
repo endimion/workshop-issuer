@@ -7,7 +7,7 @@ import {
   handleJolocomFlow,
 } from "../services/jolocomService";
 import { getSessionData } from "../services/redis";
-
+const constants = require("../utils/consts")
 
 import { publish } from "../services/sse-service";
 
@@ -16,12 +16,12 @@ const makeConnectionRequestController = async (req, res, issuerAgent) => {
   let vcType = req.body.vcType;
   let endpoint = req.body.endpoint
   let isMobile = req.body.isMobile ? true : false;
-  let callback = req.baseUrl
-    ? `${endpoint}/${req.baseUrl}/connectionResponse?sessionId=${sessionId}`
+  let callback = constants.BASE_PATH
+    ? `${endpoint}/${constants.BASE_PATH}/connectionResponse?sessionId=${sessionId}`
     : endpoint + "/connectionResponse?sessionId=" + sessionId;
-  // console.log(
-  //   "jolocom-api-contorller, makeConnectionRquest callback::" + callback
-  // );
+  console.log(
+    "jolocom-api-contorller, makeConnectionRquest callback::" + callback
+  );
 
   console.log('jolocom-api-controllers:')
   console.log(` sessionId ${sessionId}, vcType ${vcType}, endpoint ${endpoint}, isMobile ${isMobile} callback ${callback}`)
@@ -82,10 +82,10 @@ const handleVCRequestController = async (req, res, issuerAgent, endpoint) => {
   let userData = await getSessionData(sessionId,"profile")//req.session.userData;
   // console.log(userData);
   // req.session.endpoint = endpoint;
-  // req.session.baseUrl = process.env.BASE_PATH;
+  
 
-  let callback = process.env.BASE_PATH
-    ? `${endpoint}/${process.env.BASE_PATH}/offerResponse?vcType=${vcType}&sessionId=${sessionId} `
+  let callback = constants.BASE_PATH
+    ? `${endpoint}/${constants.BASE_PATH}/offerResponse?vcType=${vcType}&sessionId=${sessionId} `
     : endpoint + `/offerResponse?vcType=${vcType}&sessionId=${sessionId} `;
   // console.log("handleVCRequestController userData in session")
   // console.log(userData)

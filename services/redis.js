@@ -1,4 +1,5 @@
 const Redis = require("redis");
+const constants = require("../utils/consts")
 
 let _client = null;
 
@@ -6,7 +7,7 @@ const DEFAULT_EXPIRATION = 300;
 
 function getClient() {
   if (_client === null) {
-    let redisUrl = process.env.REDIS?process.env.REDIS:"localhost"
+    let redisUrl = constants.REDIS
     _client = Redis.createClient(6379, redisUrl); // this can take config stuff
   }
   return _client;

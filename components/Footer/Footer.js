@@ -16,6 +16,9 @@ import Button from "../CustomButtons/Button";
 import Link from "next/link";
 
 const useStyles = makeStyles(styles);
+const constants = require("../../utils/consts")
+
+let cefImgURL = constants.BASE_PATH? `/${constants.BASE_PATH}/cef-logo.png` :"/cef-logo.png" 
 
 export default function Footer(props) {
   const classes = useStyles();
@@ -34,7 +37,7 @@ export default function Footer(props) {
         <div className={classes.left}>
           <div className={classes.lfImgAndTextWr}>
             <img style={{maxHeight:"7rem"}}
-                 src="/cef-logo.png"
+                 src={cefImgURL}
                  alt="..."
             />
             <div className={classes.lfImgAndText}>

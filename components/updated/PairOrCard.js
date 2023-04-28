@@ -5,10 +5,7 @@ import GridItem from "../Grid/GridItem";
 
 
 const PairOrCard = (props) => {
-  let sseEndpoint = props.baseUrl
-    ? `${props.endpoint}/${props.baseUrl}`
-    : props.endpoint;
-  
+
   let vcSentToUser = (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -69,10 +66,12 @@ const PairOrCard = (props) => {
         <QrPrompt qrData={props.qrData} baseUrl={props.baseUrl}  isMobile={props.isMobile}/>
         <SSE
           uuid={props.uuid}
-          endpoint={sseEndpoint}
           serverSessionId={props.serverSessionId}
           sealSession={props.sealSession}
           onConnected={props.onConnected}
+          baseUrl={props.baseUrl}
+          serverPort={props.serverPort}
+          endpoint={props.endpoint}
         />
       </div>
     );
@@ -88,10 +87,12 @@ const PairOrCard = (props) => {
           />
           <SSE
             uuid={props.uuid}
-            endpoint={sseEndpoint}
             serverSessionId={props.serverSessionId}
             sealSession={props.sealSession}
             onConnected={props.onConnected}
+            baseUrl={props.baseUrl}
+            serverPort={props.serverPort}
+            endpoint={props.endpoint}
           />
         </div>
       );

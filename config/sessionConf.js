@@ -1,11 +1,12 @@
 const session = require("express-session");
 const connectRedis = require("connect-redis");
 const redis = require('redis');
+const constants = require("../utils/consts")
 
 
 const RedisStore = connectRedis(session);
 //Configure redis client
-let redisUrl = process.env.REDIS?process.env.REDIS:"localhost"
+let redisUrl = constants.REDIS
 const redisClient = redis.createClient({
   host: redisUrl,
   port: 6379,
@@ -24,11 +25,11 @@ const getSessionConfg = (isProduction) => {
   };
   if (isProduction) {
     console.log(
-      `will set sessionstore to memcache ${process.env.MEMCACHED_URL}`
+      `will set sessionstore to memcache ${redisUrl}`
     );
     SESSION_CONF.store = new RedisStore({ client: redisClient });
   }
-  if (process.env.HTTPS_COOKIES === true) {
+  if (constants.HTTPS_COOKIES === true) {
     SESSION_CONF.cookie.secure = true; // serve secure cookies, i.e. only over https, only for production
   }
   return SESSION_CONF;
