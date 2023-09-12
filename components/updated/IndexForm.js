@@ -11,48 +11,35 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Link from "next/link";
+//
+import LoginForm from "./LoginForm";
 
 export default function IndexForm(props) {
   let longText = "";
+  const paperStyle = {
+    padding: 20,
+    // height: "70vh",
+    width: "50%",
+    margin: "20px auto",
+  };
+
+  const top3EM = { marginTop: "3em" };
 
   return (
     <LayoutNew home activeStep={0}>
-      <Head>
-        <title>ERUA ISSUER</title>
+      <Head >
+        <title>ERUA Workshop Ticket Issuer</title>
       </Head>
 
-      <Typography variant="h5" sx={{ mt: 6, mb: 4 }}>
-        ERUA Issuer Service
-      </Typography>
-      <Typography sx={{ mt: 6, mb: 4 }}>
-        To generate your ERUA ID please authenticate using:
-        <Box fontWeight="fontWeightBold" display="inline">
-          <List>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemText primary="1. Your Home Instituion Credentials" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Box>
+      <Typography variant="h5" sx={{ mt: 6, mb: 4 }} style={top3EM}>
+        
       </Typography>
 
-      <Typography></Typography>
-      <Box>
-        <Button
-          variant="contained"
-          size="large"
-          type="submit"
-          // onClick={() => {
-          //   console.log(constants.BASE_PATH? `/${constants.BASE_PATH}/login`:"login")
-          //   window.location = props.basePath? `/${props.basePath}/login`:"login"//"/login";
-          // }}
-        >
-          <Link href="login">
-             <a>Access the service</a>
-          </Link>
-        </Button>
-      </Box>
+      {/* <Typography sx={{ mt: 6, mb: 4 }} style={top1EM}>
+        To generate your Ticket for an ERUA Workshop, first verify you identity
+        by authenticating with one of the available options:
+      </Typography> */}
+      <LoginForm />
     </LayoutNew>
   );
 }

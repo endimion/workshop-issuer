@@ -33,7 +33,7 @@ class VerifyUserView extends React.Component {
         basePath: req.basePath
       };
     } else {
-        console.log("QWERQ@#$Q@#$ " + req.basePath)
+        // console.log("QWERQ@#$Q@#$ " + req.basePath)
 
       if (sessionId) {
         reduxStore.dispatch(setSessionId(sessionId));

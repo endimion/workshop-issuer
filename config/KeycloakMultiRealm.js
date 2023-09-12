@@ -1,6 +1,6 @@
 const Keycloak = require("keycloak-connect");
 const compose = require("compose-middleware").compose;
-const constants = require("../utils/consts")
+const constants = require("../utils/consts_backend")
 
 
 function KeycloakMultiRealm(config, keycloakConfigs) {

@@ -1,5 +1,5 @@
 const Redis = require("redis");
-const constants = require("../utils/consts")
+const constants = require("../utils/consts_backend")
 
 let _client = null;
 
@@ -22,7 +22,7 @@ const setOrUpdateSessionData = async (
   let cacheObject = {
     [variableName]: variableValue,
   };
-  // console.log("object to cache with key sessionId " + sessionId + "-variable name-"+ variableName);
+  console.log("object to cache with key sessionId " + sessionId + "-variable name-"+ variableName);
   // console.log(cacheObject);
   //frist make sure object doesnot exist
   //if it exists get it and update if necessary its keys
@@ -50,7 +50,10 @@ const getSessionData = async (sessionId, variableName=null) => {
         if (variableName !== null) {
           try {
             let valueAsObject = JSON.parse(data);
-            resolve(valueAsObject[variableName]);
+            // console.log("for session "+sessionId + "i got the following data cached")
+            // console.log(valueAsObject)
+            if(valueAsObject == null) resolve(null)
+            else resolve(valueAsObject[variableName]);
           } catch (err) {
             reject(err);
           }

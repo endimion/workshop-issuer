@@ -1,7 +1,7 @@
 "use strict";
 const nodemailer = require("nodemailer");
 require('dotenv').config();
-const constants = require("../utils/consts")
+const constants = require("../utils/consts_backend")
 
 
 // create reusable transporter object using the default SMTP transport

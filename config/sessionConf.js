@@ -1,7 +1,7 @@
 const session = require("express-session");
 const connectRedis = require("connect-redis");
 const redis = require('redis');
-const constants = require("../utils/consts")
+const constants = require("../utils/consts_backend")
 
 
 const RedisStore = connectRedis(session);

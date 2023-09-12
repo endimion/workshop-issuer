@@ -1,11 +1,7 @@
-// import { getSealSessionData, validateToken } from "../services/sealService";
-import { endpoints } from "../config/seal_endpoints";
-import { parseSealAttributeSet } from "../utils/dataStoreHelper";
-import { defaultClaims } from "../config/defaultOidcClaims";
-import { updatePassportConfig } from "../config/serverConfig";
 import { v4 as uuidv4 } from "uuid";
 import { getSessionData, setOrUpdateSessionData } from "../services/redis";
-const constants = require("../utils/consts")
+const constants = require("../utils/consts_backend");
+import axios from "axios";
 
 const landingPage = async (app, req, res) => {
   return app.render(req, res, "/", req.query);
@@ -18,7 +14,7 @@ const verifyUserDetailsPage = async (app, req, res, serverEndpoint) => {
     eduPersonUniqueId,
     email,
     schacHomeOrganization,
-    eduPersonAffiliation
+    eduPersonAffiliation,
   } = req.session.passport.user.profile;
   if (family_name) req.sessionId = uuidv4();
 
@@ -28,31 +24,146 @@ const verifyUserDetailsPage = async (app, req, res, serverEndpoint) => {
     email: email,
     eduPersonUniqueId: eduPersonUniqueId,
     schacHomeOrganization: schacHomeOrganization,
-    eduPersonAffiliation: eduPersonAffiliation
+    eduPersonAffiliation: eduPersonAffiliation,
   };
 
   setOrUpdateSessionData(req.sessionId, "userDetails", userDetails);
 
   req.endpoint = serverEndpoint;
   req.userDetails = userDetails;
-  req.basePath = constants.BASE_PATH
+  req.basePath = constants.BASE_PATH;
   // console.log(req.basePath)
- 
+
   return app.render(req, res, "/verify-user", req.query);
 };
 
-// const ticketInfo = async (app, req, res) => {
-//   console.log(req.userDetails);
-//   return app.render(req, res, "/ticketInfo", req.query);
-// };
+const verifyEmailPage = async (app, req, res, serverEndpoint) => {
+  req.sessionId = uuidv4();
 
-const issueServiceCard = async (app, req, res, serverEndpoint) => {
-  req.userData = req.session.passport.user;
+  // TODO this has to be added after email verification, see above function
+  // setOrUpdateSessionData(req.sessionId, "userDetails", userDetails);
+
+  req.endpoint = serverEndpoint;
+
+  req.basePath = constants.BASE_PATH;
+  // console.log(req)
+  return app.render(req, res, "/email-verification", req.query);
+};
+
+const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
+  console.log("view-controllers selectCredentialtoIssue");
+  // console.log(req.session.passport);
+  req.userData = req.session.passport
+    ? {
+        name: req.session.passport.user.profile.given_name,
+        surname: req.session.passport.user.profile.family_name,
+        email: req.session.passport.user.profile.email,
+      }
+    : JSON.parse(await getSessionData(req.query.sessionId, "userDetails"));
   req.sessionId = req.query.sessionId;
   req.endpoint = serverEndpoint;
-  req.basePath = constants.BASE_PATH
-  // console.log("view-controllers:: issueSserviceCard")
-  // console.log(serverEndpoint)
+  req.basePath = constants.BASE_PATH;
+
+  // console.log("view-controllers:: selectCredentialtoIssue");
+  // console.log(req.userData);
+  // console.log(req.sessionId);
+  // console.log(req.endpoint);
+  // console.log(req.basePath);
+
+  if (req.userData && req.userData.workshops) {
+    req.optionalCredentials = req.userData.workshops.map((ws) => {
+      return { type: "workshop-ticket-" + ws, name: ws };
+    });
+    return app.render(req, res, "/select_credential", req.query);
+  } else {
+    let options = {
+      method: "POST",
+      url: constants.CHECK_USER_WORKSHOPS,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        first_name: req.userData.name,
+        last_name: req.userData.surname,
+        email: req.userData.email,
+      },
+    };
+    axios
+      .request(options)
+      .then(async (response) => {
+        /*
+[{
+   id:"",
+   first_name:"",
+   last_name:"",
+   application_status:"PENDING"
+   workshop: [{
+    id:"",
+    title:"",
+    slug:"",
+    landing_page:""
+   }]
+}]
+
+
+*/
+        //TODO unmock this
+        response = [
+          {
+            id: "",
+            first_name: "Nikos",
+            last_name: "Triantafyllou",
+            application_status: "OK",
+            workshop: {
+              id: "",
+              title: "ANIMA SYROS2",
+              slug: "",
+              landing_page: "",
+            },
+          },
+        ];
+
+        let jsonToSend = { name: "", surname: "" };
+        response.forEach((element) => {
+          if (element.application_status != "PENDING") {
+            if (jsonToSend.name === "") jsonToSend.name = element.first_name;
+            if (jsonToSend.surname === "")
+              jsonToSend.surname = element.last_name;
+            if (jsonToSend.workshops === undefined) {
+              jsonToSend.workshops = [];
+            }
+            jsonToSend.workshops.push(element.workshop.title);
+          }
+        });
+        // console.log("TTTTTTTTTTTTT")
+        // console.log(jsonToSend);
+        // console.log("TTTTTTTTTTTTT")
+        if (jsonToSend.workshops) {
+          req.optionalCredentials = jsonToSend.workshops.map((ws) => {
+            return { type: "workshop-ticket-" + ws, name: ws };
+          });
+          console.log(req.optionalCredentials);
+          return app.render(req, res, "/select_credential", req.query);
+        }
+      })
+      .catch((err) => {
+        console.log("No Credentials avaiable for user");
+        return app.render(req, res, "/select_credential", req.query);
+      });
+  }
+};
+
+const issueServiceCard = async (app, req, res, serverEndpoint) => {
+  req.userData = req.session.passport
+    ? req.session.passport.user
+    : JSON.parse(await getSessionData(req.query.sessionId, "userDetails"));
+  req.sessionId = req.query.sessionId;
+  req.credentialToIssueType = req.query.type;
+  req.endpoint = serverEndpoint;
+  req.basePath = constants.BASE_PATH;
+  console.log("view-controllers:: issueSserviceCard");
+  console.log("userData");
+  console.log(req.userData);
 
   // let claims = defaultClaims;
   let redirectURI = constants.CONNECTION_RESPONSE_URI
@@ -61,73 +172,6 @@ const issueServiceCard = async (app, req, res, serverEndpoint) => {
 
   return app.render(req, res, "/issue_card", req.query);
 };
-
-// const startLogin = async (app, req, res, serverPassport, oidcClient) => {
-//   // let lei = req.body.lei;
-//   let companyName = req.body.companyName;
-//   let legalPersonIdentifier = req.body.legal_person_identifier;
-//   let email = req.body.email;
-//   let country = req.body.country;
-
-//   let claims = defaultClaims;
-//   let sessionId = req.cookies.sessionId;
-
-//   await setOrUpdateSessionData(
-//     sessionId,
-//     "legalPersonIdentifier",
-//     legalPersonIdentifier
-//   );
-//   await setOrUpdateSessionData(sessionId, "companyName", companyName);
-//   await setOrUpdateSessionData(sessionId, "email", email);
-//   await setOrUpdateSessionData(sessionId, "companyCountry", country);
-
-//   claims.userinfo.verified_claims.verification.evidence[0].registry.country.value =
-//     country;
-//   // console.log("!!!!!!!!!!! the claims that will be added!!!!!!!")
-//   // console.log(claims.userinfo.verified_claims.verification.evidence[0])
-//   if (companyName || legalPersonIdentifier) {
-//     const headerRaw = {
-//       alg: "none",
-//       typ: "JWT",
-//     };
-//     const payloadRaw = {
-//       sub: "mock",
-//       aud: "mock",
-//       iss: "http://localhost",
-//       client_id: oidcClient.client_id,
-//       redirect_uri: oidcClient.redirect_uris[0],
-//       claims: claims,
-//     };
-
-//     if (companyName) {
-//       payloadRaw.legal_name = companyName;
-//     }
-//     if (legalPersonIdentifier) {
-//       payloadRaw.legal_person_identifier = legalPersonIdentifier;
-//     }
-
-//     // console.log(oidcClient)
-//     // console.log(oidcClient.client_id)
-//     // console.log(oidcClient.redirect_uris)
-
-//     const header = JSON.stringify(headerRaw);
-//     const payload = JSON.stringify(payloadRaw);
-//     let jwt = `${urlEncode(header)}.${urlEncode(payload)}.`;
-//     console.log(`viewcontrollers.js::startLogin:: will make request with jwt`);
-//     updatePassportConfig(serverPassport, claims, oidcClient, jwt);
-//   } else {
-//     updatePassportConfig(serverPassport, claims, oidcClient);
-//   }
-
-//   // updatePassportConfig(serverPassport, claims, oidcClient);
-//   res.redirect(307, "/login");
-// };
-
- 
- 
- 
-
- 
 
 const encode = function (unencoded) {
   return new Buffer(unencoded || "").toString("base64");
@@ -138,9 +182,10 @@ const urlEncode = function (unencoded) {
 };
 
 export {
-  // startLogin,
+  selectCredentialtoIssue,
   landingPage,
   verifyUserDetailsPage,
   // ticketInfo,
   issueServiceCard,
+  verifyEmailPage,
 };

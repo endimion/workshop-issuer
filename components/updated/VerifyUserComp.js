@@ -56,10 +56,14 @@ const VerifyUser = (props) => {
   let contunueLink = `/issue_card?sessionId=${props.sessionId}`;
 
   return (
-    <LayoutNew home alert={!props.userDetails} activeStep={1}>
+    <LayoutNew home alert={!props.userDetails} activeStep={1} 
+    accountName={props.userDetails.Name[0]}
+    name={props.userDetails.Name}
+    surname={props.userDetails.Surname}
+    >
       <>
         <Typography variant="h5" sx={{ mt: 6, mb: 4 }}>
-          Before we begin, Is your Personal Information accurate?
+          Before we continue, Is your Personal Information accurate?
         </Typography>
         <TableContainer>
           <Table aria-label="simple table">
@@ -93,10 +97,12 @@ const VerifyUser = (props) => {
           size="large"
           type="submit"
           onClick={(event) => {
-            console.log("hey");
             event.preventDefault();
             console.log(props.userDetails);
-            window.location.href = props.basePath? `/${props.basePath}/issue_card?sessionId=${props.sessionId}`:`/issue_card?sessionId=${props.sessionId}`;
+            //window.location.href = props.basePath? `/${props.basePath}/issue_card?sessionId=${props.sessionId}`:`/issue_card?sessionId=${props.sessionId}`;
+            window.location.href = props.basePath
+              ? `/${props.basePath}/select_credential?sessionId=${props.sessionId}`
+              : `/select_credential?sessionId=${props.sessionId}`;
           }}
         >
           {/* <Link href={contunueLink}>Continue</Link> */}

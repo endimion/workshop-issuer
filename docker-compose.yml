@@ -1,16 +1,19 @@
-version: '3'
+version: "3"
 
-services:  
+services:
+
+
+
    redis:
     image: "redis:alpine"
-    command: redis-server 
+    command: redis-server
     environment:
      - REDIS_REPLICATION_MODE=master
     ports:
      - "6379:6379"
 
    erua-issuer:
-    image: endimion13/erua-issuer:0.0.1a
+    image: endimion13/workshop-issuer:0.0.1a
     environment:
       NODE_ENV: "production"
       # for SSL: KEY_PATH:
@@ -26,7 +29,7 @@ services:
       BASE_PATH: 'erua-issuer'
     ports:
       - 5030:5030
-   
+
    nginx_rproxy:
     image: nginx:latest
     container_name: nginx_rproxy
@@ -37,6 +40,3 @@ services:
       - ./certs:/etc/certs
     ports:
       - 80:80
-
-
-
