@@ -23,6 +23,9 @@ import TableRow from "@mui/material/TableRow";
 // List
 
 const VerifyEmail = ({ sessionId, basePath }) => {
+  console.log("VerifyEmailCom basepath " + basePath)
+
+
   let [email, setEmail] = React.useState(null);
   let [isSending, setIsSending] = React.useState(false);
   let [otpSent, setOTPSent] = React.useState(false);
@@ -76,6 +79,7 @@ const VerifyEmail = ({ sessionId, basePath }) => {
               object: {
                 name: userDetailsData.name,
                 surname: userDetailsData.surname,
+                email: email,
                 workshops: userDetailsData.workshops,
               },
               variable: "userDetails",
@@ -136,6 +140,7 @@ const VerifyEmail = ({ sessionId, basePath }) => {
     // fetch()
     return new Promise((resolve, reject) => {
       const url = basePath ? `/${basePath}/send-otp` : `/send-otp`;
+      console.log("sending otp request to : "+basePath+"/send-otp")
       const options = {
         method: "POST",
         headers: {
@@ -173,6 +178,7 @@ const VerifyEmail = ({ sessionId, basePath }) => {
         id="outlined-otp-field"
         label="OTP"
         defaultValue=" "
+        value={otp}
         helperText={optPrompt}
         style={top1EM}
         onChange={(event) => {
@@ -245,6 +251,7 @@ const VerifyEmail = ({ sessionId, basePath }) => {
       accountName={userDetails ? userDetails.name[0] : null}
       name={userDetails ?userDetails.name:null}
       surname={userDetails ?userDetails.surname:null}
+      basePath={basePath}
     >
       <Typography variant="h5" sx={{ mt: 6, mb: 4 }}>
         Before we continue, please verify your email

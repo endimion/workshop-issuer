@@ -8,8 +8,9 @@ import {
   AppBar,
   Typography,
   Toolbar,
-  Link,
+   
 } from "@material-ui/core";
+import Link from "next/link";
 
 export default function LoginForm({ value }) {
   const paperStyle = {
@@ -50,7 +51,7 @@ export default function LoginForm({ value }) {
             </Link>
           </Button>
 
-          <Button
+          {/* <Button
             type="submit"
             color="primary"
             variant="contained"
@@ -63,13 +64,13 @@ export default function LoginForm({ value }) {
                 2. Greek Citizens: Gov.gr Wallet
               </span>
             </Link>
-          </Button>
+          </Button> */}
 
           <Button
             type="submit"
             color="primary"
             variant="contained"
-            style={othersBtnStyle}
+            style={btnstyle}
             fullWidth
           >
             <Link href="email-verification">

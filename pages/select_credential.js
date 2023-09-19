@@ -107,6 +107,7 @@ class SelectCredentialPage extends React.Component {
       accountName={this.props.sessionData.name[0]}
       name={this.props.sessionData.name}
       surname={this.props.sessionData.surname}
+      basePath={this.props.baseUrl}
       >
         <Head>
           <title>ERUA Issuer</title>

@@ -1,26 +1,53 @@
-import Head from "next/head";
-import LayoutNew from "../components/updated/LayoutNew";
-import IndexForm from "../components/updated/IndexForm"
-import utilStyles from "../styles/utils.module.css";
-import Link from "next/link";
-import MessageBox from "../components/messageBox";
-import ProductSection from "../pages-sections/LandingPage-Sections/ProductSection";
 import React from "react";
+import { connect } from "react-redux";
+import IndexForm from "../components/updated/IndexForm"
+import { setUserDetails, setSessionId, setEndpoint, setBaseUrl } from "../store.js";
+const constants = require("../utils/consts.js")
 
-import { makeStyles } from "@material-ui/core/styles";
-// core components
-import GridContainer from "components/Grid/GridContainer.js";
-import GridItem from "components/Grid/GridItem.js";
-import Button from "components/CustomButtons/Button.js";
-import CustomInputNew from "components/CustomInput/CustomInputNew.js";
+class Home extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-import styles from "styles/jss/nextjs-material-kit/components/formStyle.js";
-import stylesCustom from "../styles/jss/palaemon.module.js";
+  static async getInitialProps({ reduxStore, req }) {
+   
+    if (typeof window === "undefined") {
+      reduxStore.dispatch(setBaseUrl(req.basePath));
+      return {
+        basePath: req.basePath
+      };
+    } else {
+        // console.log("QWERQ@#$Q@#$ " + req.basePath)
 
-const constants = require("../utils/consts")
+      return {
+        basePath: reduxStore.getState().baseUrl,
+      };
+    }
+  }
 
-export default function Home() {
-  return (
-    <IndexForm />
-  )
+
+  render() {
+    return (
+      <IndexForm
+        basePath={this.props.basePath}
+      />
+    );
+  }
 }
+
+function mapStateToProps(state) {
+  return {
+    basePath: state.baseUrl
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setBaseUrl: (url) => {
+      dispatch(setBaseUrl(url));
+    },
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
+
+

@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv").config();
 
 module.exports = Object.freeze({
   PORT: parseInt(process.env.PORT, 10) || 5030,
@@ -10,7 +10,7 @@ module.exports = Object.freeze({
   USER_INFO: process.env.USER_INFO ? process.env.USER_INFO : "localhost",
   REDIS: process.env.REDIS ? process.env.REDIS : "localhost",
   HTTPS_COOKIES: process.env.HTTPS_COOKIES,
-  BASE_PATH: process.env.BASE_PATH,
+  BASE_PATH: process.env.BASE_PATH?process.env.BASE_PATH:"",
   SENDER_ID: process.env.SENDER_ID,
   CONNECTION_RESPONSE_URI: process.env.CONNECTION_RESPONSE_URI,
 
@@ -33,9 +33,12 @@ module.exports = Object.freeze({
   GATACA_CREDENTIAL_ISSUE_SESSION_URL:
     "https://certify.gataca.io/api/v1/issuanceRequests",
 
-  WS_URL: process.env.WS_URL ? process.env.WS_URL : "ws://localhost:5000",
+  WS_URL: process.env.WS_URL ? process.env.WS_URL : "https://dss.aegean.gr",
+  WS_API: process.env.WS_API
+    ? process.env.WS_API
+    : "https://dss.aegean.gr/gataca-helper",
 
   CHECK_USER_WORKSHOPS: process.env.CHECK_USER_WORKSHOPS
     ? process.env.CHECK_USER_WORKSHOPS
-    : "https://jsonplaceholder.typicode.com/posts",
+    : "http://195.251.134.61:8081",
 });

@@ -60,6 +60,7 @@ const VerifyUser = (props) => {
     accountName={props.userDetails.Name[0]}
     name={props.userDetails.Name}
     surname={props.userDetails.Surname}
+    basePath={props.basePath}
     >
       <>
         <Typography variant="h5" sx={{ mt: 6, mb: 4 }}>

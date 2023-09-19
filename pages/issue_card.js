@@ -40,13 +40,12 @@ class IssueServiceCard extends React.Component {
   static async getInitialProps({ reduxStore, req, query }) {
     let userData;
     let DIDOk;
-    let credentialToIssueType;
+    let
+      credentialToIssueType = req.credentialToIssueType;
+
     let sessionId = req ? req.query.sessionId : query.sessionId;
     if (typeof window === "undefined") {
-      console.log(req)
-      
       userData = req.userData;
-      credentialToIssueType = req.credentialToIssueType;
 
       reduxStore.dispatch(setEndpoint(req.endpoint));
       let baseUrl = req.baseUrl ? `/${req.baseUrl}/` : "";
@@ -56,6 +55,7 @@ class IssueServiceCard extends React.Component {
       DIDOk = req.DID;
       reduxStore.dispatch(setBaseUrl(req.basePath));
       reduxStore.dispatch(setServerPort(req.port));
+      // reduxStore.dispatch(setCredentialToIssueType(credentialToIssueType));
     }
 
     //this way the userSessionData gets set in all settings
@@ -77,7 +77,7 @@ class IssueServiceCard extends React.Component {
     // mapstatetoprops overrides these values if they match
     return {
       sessionData: userData,
-      credentialToIssueType: credentialToIssueType,
+      credentialToIssueType: reduxStore.getState().credentialToIssue,
       qrData: reduxStore.getState().qrData,
       gatacaSesssion: reduxStore.getState().gatacaSession,
       vcSent: false,
@@ -107,6 +107,9 @@ class IssueServiceCard extends React.Component {
 
   render() {
     let gatacaQRData = this.props.gatacaQR;
+    let loaderURL = this.props.baseUrl
+      ? this.props.baseUrl + "/loader2.gif"
+      : "loader2.gif";
 
     let mainDiv = <div></div>;
 
@@ -127,7 +130,7 @@ class IssueServiceCard extends React.Component {
           <Box fontWeight="fontWeightBold" display="inline">
             <img
               alt=""
-              src="/loader2.gif"
+              src={loaderURL}
               style={{
                 maxWidth: "15rem",
                 display: "block",
@@ -173,6 +176,8 @@ class IssueServiceCard extends React.Component {
           <WebsocketComp
             sessionId={this.props.gatacaSession}
             onIssueFinished={this.onIssueFinished}
+            userData = {this.props.sessionData}
+            issueTemplate={this.props.credentialToIssueType}
           />
         </Typography>
       );
@@ -181,10 +186,22 @@ class IssueServiceCard extends React.Component {
       <LayoutNew
         home
         activeStep={3}
-        accountName={this.props.sessionData.name?this.props.sessionData.name[0]:this.props.sessionData.profile.given_name[0]}
+        accountName={
+          this.props.sessionData.name
+            ? this.props.sessionData.name[0]
+            : this.props.sessionData.profile.given_name[0]
+        }
         basePath={this.props.basePath}
-        name={this.props.sessionData.name?this.props.sessionData.name:this.props.sessionData.profile.given_name}
-        surname={this.props.sessionData.surname?this.props.sessionData.surname:this.props.sessionData.profile.family_name}
+        name={
+          this.props.sessionData.name
+            ? this.props.sessionData.name
+            : this.props.sessionData.profile.given_name
+        }
+        surname={
+          this.props.sessionData.surname
+            ? this.props.sessionData.surname
+            : this.props.sessionData.profile.family_name
+        }
       >
         <Head>
           <title>ERUA Issuer</title>
@@ -212,7 +229,7 @@ function mapStateToProps(state) {
     endpoint: state.endpoint,
     credQROffer: state.credQROffer,
     serverPort: state.serverPort,
-    credentialToIssueType: state.credentialToIssueType,
+    credentialToIssueType: state.credentialToIssue,
     gatacaQR: state.gatacaQR,
     gatacaSession: state.gatacaSession,
   };
@@ -235,17 +252,17 @@ const mapDispatchToProps = (dispatch) => {
       baseUrl,
       endpoint,
       vcType,
-      credentialType,
       userData,
       isMobile
     ) => {
+      console.log("issue_card.js");
+      console.log(vcType);
       dispatch(
         makeGatacaIssueOffer(
           sessionId,
           baseUrl,
           endpoint,
           vcType,
-          credentialType,
           userData,
           isMobile
         )

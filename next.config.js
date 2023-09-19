@@ -10,7 +10,7 @@ require("dotenv").config();
 const rewrites = () => {
   return [
     {
-      source: "/erua-issuer",
+      source: "/workshop-issuer",
       destination: "/",
     },
   ];

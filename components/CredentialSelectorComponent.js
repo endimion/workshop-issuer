@@ -19,8 +19,9 @@ const CredentialSelectorComponent = (props) => {
         <ListItem disablePadding key={credentialDef.name}>
           <ListItemButton
             onClick={(event) => {
-              window.location.href = props.basePath
-                ? `/${props.basePath}/issue_card?sessionId=${props.sessionId}&type=${credentialDef.type}`
+              //TODO ensure basePath is fetched here
+              window.location.href = props.baseUrl
+                ? `/${props.baseUrl}/issue_card?sessionId=${props.sessionId}&type=${credentialDef.type}`
                 : `/issue_card?sessionId=${props.sessionId}&type=${credentialDef.type}`;
             }}
           >

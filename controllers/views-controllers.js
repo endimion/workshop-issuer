@@ -4,6 +4,8 @@ const constants = require("../utils/consts_backend");
 import axios from "axios";
 
 const landingPage = async (app, req, res) => {
+  req.basePath = constants.BASE_PATH;
+  console.log("the base path is " + constants.BASE_PATH)
   return app.render(req, res, "/", req.query);
 };
 
@@ -39,12 +41,7 @@ const verifyUserDetailsPage = async (app, req, res, serverEndpoint) => {
 
 const verifyEmailPage = async (app, req, res, serverEndpoint) => {
   req.sessionId = uuidv4();
-
-  // TODO this has to be added after email verification, see above function
-  // setOrUpdateSessionData(req.sessionId, "userDetails", userDetails);
-
   req.endpoint = serverEndpoint;
-
   req.basePath = constants.BASE_PATH;
   // console.log(req)
   return app.render(req, res, "/email-verification", req.query);
@@ -116,7 +113,7 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
             application_status: "OK",
             workshop: {
               id: "",
-              title: "ANIMA SYROS2",
+              title: "ANIMA SYROS",
               slug: "",
               landing_page: "",
             },
@@ -158,12 +155,14 @@ const issueServiceCard = async (app, req, res, serverEndpoint) => {
     ? req.session.passport.user
     : JSON.parse(await getSessionData(req.query.sessionId, "userDetails"));
   req.sessionId = req.query.sessionId;
-  req.credentialToIssueType = req.query.type;
+  req.credentialToIssueType = req.query.type
   req.endpoint = serverEndpoint;
   req.basePath = constants.BASE_PATH;
   console.log("view-controllers:: issueSserviceCard");
   console.log("userData");
   console.log(req.userData);
+  // console.log("credType")
+  // console.log(req.credentialToIssueType)
 
   // let claims = defaultClaims;
   let redirectURI = constants.CONNECTION_RESPONSE_URI

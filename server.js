@@ -88,7 +88,7 @@ app.prepare().then(async () => {
     ["/login_success", `\/${constants.BASE_PATH}/login_success`],
     async (req, res) => {
       console.log("/login_success");
-      // console.log(req.session.passport.user)
+      console.log(req.session.passport.user)
       return verifyUserDetailsPage(app, req, res, serverConfiguration.endpoint);
     }
   );
@@ -118,6 +118,9 @@ app.prepare().then(async () => {
       console.log("server.js /issue");
       // console.log(req.session.passport.user); //works ok to fetch the userdetails
       req.port = constants.PORT;
+      
+
+
       issueServiceCard(app, req, res, serverConfiguration.endpoint);
     }
   );
@@ -176,7 +179,7 @@ app.prepare().then(async () => {
             "Content-Type": "application/json",
             Authorization: `jwt ${gatacaAuthToken}`,
           },
-          data: { group: "Academic_And_AllianceID" },
+          data: { group: "WorkshopTicket" },
         };
         axios
           .request(options)
@@ -240,8 +243,8 @@ app.prepare().then(async () => {
       const mailOptions = {
         from: "your-email@example.com", // Sender's email address
         to: req.body.email, // Recipient's email address
-        subject: "ERUA ISSUESR OTP", // Email subject
-        text: "Your OTP is " + OTP, // Email text
+        subject: "WORKSHOP TICKET ISSUING SERVICE OTP", // Email subject
+        text: "WORKSHOP TICKET ISSUING SERVICE. Your OTP is " + OTP, // Email text
       };
 
       // Send the email
@@ -271,9 +274,10 @@ app.prepare().then(async () => {
     ["/verify-email", `\/${constants.BASE_PATH}/verify-email`],
     async (req, res) => {
       console.log("/verify-email");
+      
       let options = {
         method: "POST",
-        url: constants.CHECK_USER_WORKSHOPS,
+        url: constants.CHECK_USER_WORKSHOPS +"/backend/attendance/filter/",
         headers: {
           "Content-Type": "application/json",
         },
@@ -283,23 +287,12 @@ app.prepare().then(async () => {
       };
       console.log(options);
       try {
-        let result = await axios.request(options).then(async (response) => {
+        let result = await axios.request(options).then(async (resp) => {
+          
           console.log("made a post:" + req.body.email);
-          //TODO unmock this
-          response = [
-            {
-              id: "",
-              first_name: "Nikos",
-              last_name: "Triantafyllou",
-              application_status: "OK",
-              workshop: {
-                id: "",
-                title: "ANIMA SYROS",
-                slug: "",
-                landing_page: "",
-              },
-            },
-          ];
+          let response = resp.data
+          console.log(response)
+         
           let jsonToSend = {name:"",surname:""};
           response.forEach((element) => {
             if (element.application_status != "PENDING") {
@@ -375,7 +368,8 @@ app.prepare().then(async () => {
     function (req, res) {
       //TODO logout from Server???
       req.session.destroy(function (err) {
-        res.redirect("/"); //Inside a callback… bulletproof!
+        let logoutURL = constants.BASE_PATH?"/"+constants.BASE_PATH:"/"
+        res.redirect(logoutURL); //Inside a callback… bulletproof!
       });
     }
   );

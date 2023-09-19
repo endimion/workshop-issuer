@@ -96,7 +96,12 @@ export const actionTypes = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_GATACA_QR_DATA:
-      return { ...state, gatacaQR: action.data.qr, gatacaSession: action.data.gatacaSession,  fetching: false, };
+      return {
+        ...state,
+        gatacaQR: action.data.qr,
+        gatacaSession: action.data.gatacaSession,
+        fetching: false,
+      };
 
     case actionTypes.SET_CREDENTIAL_TO_ISSUE_TYPE:
       return { ...state, credentialToIssue: action.data };
@@ -359,9 +364,10 @@ export function setOptionalCredentials(optionalCredentials) {
 }
 
 export function setCredentialToIssueType(credentialType) {
+  // console.log(`store.js setSessionData called with::`);
+  //   console.log(credentialType)
   return (dispatch) => {
-    // console.log(`store.js setSessionData called with::`);
-    // console.log(sessionData)
+    
     dispatch({
       type: actionTypes.SET_CREDENTIAL_TO_ISSUE_TYPE,
       data: credentialType,
@@ -561,7 +567,6 @@ export function makeAndPushVC(
         console.log(err);
         dispatch({ type: actionTypes.VC_ISSUE_FAILED });
       });
- 
   };
 }
 
@@ -657,17 +662,18 @@ export function makeGatacaIssueOffer(
   sessionId,
   baseUrl,
   endpoint,
-  credentialType,
+  vcType,
   userData,
   isMobile
 ) {
   let postData = {
     endpoint: endpoint,
     sessionId: sessionId,
-    credentialType: credentialType,
+    credentialType: vcType,
     userData: userData,
   };
-
+  console.log(`store.js makeGatacaIssueOffer will request the following`);
+  console.log(postData);
   //console.log(`store.js makeGatacaIssueOffer isMobile ${isMobile}`)
   if (isMobile) {
     postData.isMobile = isMobile;

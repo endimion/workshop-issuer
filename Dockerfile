@@ -13,7 +13,7 @@ RUN npm install --save --legacy-peer-deps
 # Bundle app source
 COPY . /usr/src/app
 
-RUN BASE_PATH='erua-issuer' npm run build
+RUN BASE_PATH='workshop-issuer' npm run build
 
 EXPOSE 5030
 

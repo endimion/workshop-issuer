@@ -26,7 +26,7 @@ export default function IndexForm(props) {
   const top3EM = { marginTop: "3em" };
 
   return (
-    <LayoutNew home activeStep={0}>
+    <LayoutNew home activeStep={0} basePath={props.basePath}>
       <Head >
         <title>ERUA Workshop Ticket Issuer</title>
       </Head>
@@ -39,7 +39,7 @@ export default function IndexForm(props) {
         To generate your Ticket for an ERUA Workshop, first verify you identity
         by authenticating with one of the available options:
       </Typography> */}
-      <LoginForm />
+      <LoginForm basePath={props.basePath}/>
     </LayoutNew>
   );
 }

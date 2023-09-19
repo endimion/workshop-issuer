@@ -12,23 +12,46 @@ services:
     ports:
      - "6379:6379"
 
-   erua-issuer:
-    image: endimion13/workshop-issuer:0.0.1a
+   workshop-issuer:
+    image: endimion13/workshop-issuer:0.0.1f
     environment:
       NODE_ENV: "production"
-      # for SSL: KEY_PATH:
-      # for SSL: CERT_PATH:
-      # for SSL: CERT_PASS:
-      ENDPOINT: "http://localhost"
-      PORT: "5030"
-      REDIS: "redis"
+      BASE_PATH: 'workshop-issuer'
+      GATACA_APP: "afefc602-4684-4005-b374-1515f0ac06b0"
+      GATACA_PASS: "86uBcwq1Cw7WPBBTL7dJMtxUakctbavfy8HCrqgSD3bu"
+      EMAIL_USER: "eidapps@atlantis-group.gr"
+      EMAIL_PASS: "d82c4f11d3"
+      OIDC_CLIENT: "erua-issuer"
+      OIDC_CLIENT_SECRET: "TXTBJVXwWvZvEOuoxC4yRF6srcUtd0Ho"
       ISSUER_URL: "https://dss.aegean.gr/auth/realms/erua-issuer"
-      OIDC_REDIRECT_URI: "http://localhost:5030/login/callback"
-      USER_INFO: "dss1.aegean.gr"
-      USER_INFO_PORT: "8180"
-      BASE_PATH: 'erua-issuer'
+      OIDC_REDIRECT_URI: "http://localhost/workshop-issuer/login/callback"
+      REDIS: "redis"
+      WS_URL: "ws://localhost:5000"  # better to just add the public url of the server here
+      WS_API: "http://localhost:500"
     ports:
-      - 5030:5030
+      - 5031:5030
+
+
+  #  gataca-helper:
+  #   image: endimion13/gataca-helper:0.0.2b
+  #   container_name: gataca-helper  
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: "production"
+  #     # for SSL: KEY_PATH:
+  #     # for SSL: CERT_PATH:
+  #     # for SSL: CERT_PASS:
+  #     PORT: "5000"
+  #     REDIS: "redis"
+  #     GATACA_CERTIFY_URL: "https://nucleus.gataca.io/admin/v1/api_keys/login"
+  #     GATACA_CHECK_ISSUE_STATUS_URL: "https://certify.gataca.io/admin/v1/issuanceRequests"
+  #     WS_INIT_SESSION: "start-session"
+  #     CORS_URI:  "http://localhost:8081,http://localhost"
+  #     GATACA_CREATE_VERIFICATION_SESSION_URL: "https://connect.gataca.io/api/v1/sessions"
+  #     GATACA_CHECK_VERIFICATION_STATUS_URL: "https://connect.gataca.io/api/v1/sessions"
+  #   ports:
+  #     - 5000:5000
+
 
    nginx_rproxy:
     image: nginx:latest

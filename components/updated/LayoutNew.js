@@ -1,99 +1,60 @@
 import * as React from "react";
-import { styled, alpha } from "@mui/material/styles";
-//AppBar
-import AppBar from "@mui/material/AppBar";
+
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
+
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
+
 //Stepper
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Button from "@mui/material/Button";
+
 import Container from "@mui/material/Container";
 
 import Grid from "@mui/material/Grid";
 
 //Card
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
+
 import CardContent from "@mui/material/CardContent";
-
-//Forms
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
-import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-
-//Icons
-import InfoIcon from "@mui/icons-material/Info";
-import Tooltip from "@mui/material/Tooltip";
-
-//Table
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
 import CustomStepper from "./stepper.js";
 import AccountMenu from "./UserMenu.js";
-import { connect } from "mongoose";
-const constants = require("../../utils/consts");
-
-let eruaLogonURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/img/erua.png`
-  : "/img/erua.png";
-let patternURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/pattern.svg`
-  : "/pattern.svg";
-let profileURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/profile.svg`
-  : "/profile.svg";
-let signURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/sign.svg`
-  : "/sign.svg";
-let connectURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/connect.jpg`
-  : "/connect.jpg";
-let euFlagURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/eu_flag.jpg`
-  : "/eu_flag.jpg";
-let mailURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/mail.svg`
-  : "/mail.svg";
-let linkedInURL = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/linkedin.svg`
-  : "/linkedin.svg";
-
-let ebsiLogo = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/img/ebsi_logo.png`
-  : "/img/ebsi_logo.png";
-
-let ewcLogo = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/img/ewc_logo.png`
-  : "/img/ewc_logo.png";
-
-let cefLogo = constants.BASE_PATH
-  ? `/${constants.BASE_PATH}/img/cef_logo.webp`
-  : "/img/cef_logo.webp";
 
 export default function LayoutNew(props, { children, home }) {
+  let eruaLogonURL = props.basePath? `/${props.basePath}/img/erua.png`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/img/erua.png`
+    : "/img/erua.png";
+  let patternURL = props.basePath? `/${props.basePath}/pattern.svg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/pattern.svg`
+    : "/pattern.svg";
+  let profileURL = props.basePath? `/${props.basePath}/profile.svg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/profile.svg`
+    : "/profile.svg";
+  let signURL = props.basePath? `/${props.basePath}/sign.svg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/sign.svg`
+    : "/sign.svg";
+  let connectURL = props.basePath? `/${props.basePath}/connect.jpg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/connect.jpg`
+    : "/connect.jpg";
+  let euFlagURL = props.basePath? `/${props.basePath}/eu_flag.jpg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/eu_flag.jpg`
+    : "/eu_flag.jpg";
+  let mailURL = props.basePath? `/${props.basePath}/mail.svg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/mail.svg`
+    : "/mail.svg";
+  let linkedInURL = props.basePath? `/${props.basePath}/linkedin.svg`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/linkedin.svg`
+    : "/linkedin.svg";
+
+  let ebsiLogo = props.basePath? `/${props.basePath}/img/ebsi_logo.png`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/img/ebsi_logo.png`
+    : "/img/ebsi_logo.png";
+
+  let ewcLogo = props.basePath? `/${props.basePath}/img/ewc_logo.png`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/img/ewc_logo.png`
+    : "/img/ewc_logo.png";
+
+  let cefLogo = props.basePath? `/${props.basePath}/img/cef_logo.webp`:process.env.BASE_PATH
+    ? `/${process.env.BASE_PATH}/img/cef_logo.webp`
+    : "/img/cef_logo.webp";
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const top1EM = { marginTop: "1em" };
