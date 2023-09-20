@@ -10,7 +10,7 @@ module.exports = Object.freeze({
   USER_INFO: process.env.USER_INFO ? process.env.USER_INFO : "localhost",
   REDIS: process.env.REDIS ? process.env.REDIS : "localhost",
   HTTPS_COOKIES: process.env.HTTPS_COOKIES,
-  BASE_PATH: process.env.BASE_PATH?process.env.BASE_PATH:"",
+  BASE_PATH: process.env.BASE_PATH,
   SENDER_ID: process.env.SENDER_ID,
   CONNECTION_RESPONSE_URI: process.env.CONNECTION_RESPONSE_URI,
 

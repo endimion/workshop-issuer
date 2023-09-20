@@ -5,7 +5,7 @@ import axios from "axios";
 
 const landingPage = async (app, req, res) => {
   req.basePath = constants.BASE_PATH;
-  console.log("the base path is " + constants.BASE_PATH)
+  console.log("the base path is " + constants.BASE_PATH);
   return app.render(req, res, "/", req.query);
 };
 
@@ -75,52 +75,23 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
   } else {
     let options = {
       method: "POST",
-      url: constants.CHECK_USER_WORKSHOPS,
+      url: constants.CHECK_USER_WORKSHOPS + "/backend/attendance/filter/",
       headers: {
         "Content-Type": "application/json",
       },
       data: {
-        first_name: req.userData.name,
-        last_name: req.userData.surname,
-        email: req.userData.email,
+        email:req.userData.email,
       },
     };
-    axios
-      .request(options)
-      .then(async (response) => {
-        /*
-[{
-   id:"",
-   first_name:"",
-   last_name:"",
-   application_status:"PENDING"
-   workshop: [{
-    id:"",
-    title:"",
-    slug:"",
-    landing_page:""
-   }]
-}]
+    console.log(options);
+    let jsonToSend = { name: "", surname: "" };
+    try {
+      let result = await axios.request(options).then(async (resp) => {
+        console.log("made a post:" + req.userData.email);
+        let response = resp.data;
+        console.log(response);
 
-
-*/
-        //TODO unmock this
-        response = [
-          {
-            id: "",
-            first_name: "Nikos",
-            last_name: "Triantafyllou",
-            application_status: "OK",
-            workshop: {
-              id: "",
-              title: "ANIMA SYROS",
-              slug: "",
-              landing_page: "",
-            },
-          },
-        ];
-
-        let jsonToSend = { name: "", surname: "" };
+       
         response.forEach((element) => {
           if (element.application_status != "PENDING") {
             if (jsonToSend.name === "") jsonToSend.name = element.first_name;
@@ -132,21 +103,20 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
             jsonToSend.workshops.push(element.workshop.title);
           }
         });
-        // console.log("TTTTTTTTTTTTT")
-        // console.log(jsonToSend);
-        // console.log("TTTTTTTTTTTTT")
-        if (jsonToSend.workshops) {
-          req.optionalCredentials = jsonToSend.workshops.map((ws) => {
-            return { type: "workshop-ticket-" + ws, name: ws };
-          });
-          console.log(req.optionalCredentials);
-          return app.render(req, res, "/select_credential", req.query);
-        }
-      })
-      .catch((err) => {
-        console.log("No Credentials avaiable for user");
-        return app.render(req, res, "/select_credential", req.query);
       });
+
+      if (jsonToSend.workshops) {
+        req.optionalCredentials = jsonToSend.workshops.map((ws) => {
+          return { type: "workshop-ticket-" + ws, name: ws };
+        });
+        console.log(req.optionalCredentials);
+        return app.render(req, res, "/select_credential", req.query);
+      }
+    } catch (err) {
+      console.log(err)
+      console.log("No Credentials avaiable for user");
+      return app.render(req, res, "/select_credential", req.query);
+    }
   }
 };
 
@@ -155,7 +125,7 @@ const issueServiceCard = async (app, req, res, serverEndpoint) => {
     ? req.session.passport.user
     : JSON.parse(await getSessionData(req.query.sessionId, "userDetails"));
   req.sessionId = req.query.sessionId;
-  req.credentialToIssueType = req.query.type
+  req.credentialToIssueType = req.query.type;
   req.endpoint = serverEndpoint;
   req.basePath = constants.BASE_PATH;
   console.log("view-controllers:: issueSserviceCard");
