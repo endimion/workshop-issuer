@@ -80,7 +80,7 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
         "Content-Type": "application/json",
       },
       data: {
-        email:req.userData.email,
+        email: req.userData.email,
       },
     };
     console.log(options);
@@ -91,7 +91,6 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
         let response = resp.data;
         console.log(response);
 
-       
         response.forEach((element) => {
           if (element.application_status != "PENDING") {
             if (jsonToSend.name === "") jsonToSend.name = element.first_name;
@@ -111,9 +110,12 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
         });
         console.log(req.optionalCredentials);
         return app.render(req, res, "/select_credential", req.query);
+      } else {
+        console.log("No Credentials avaiable for user");
+        return app.render(req, res, "/select_credential", req.query);
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       console.log("No Credentials avaiable for user");
       return app.render(req, res, "/select_credential", req.query);
     }
