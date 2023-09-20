@@ -49,12 +49,13 @@ const verifyEmailPage = async (app, req, res, serverEndpoint) => {
 
 const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
   console.log("view-controllers selectCredentialtoIssue");
-  // console.log(req.session.passport);
+  console.log(req.session.passport);
   req.userData = req.session.passport
     ? {
         name: req.session.passport.user.profile.given_name,
         surname: req.session.passport.user.profile.family_name,
         email: req.session.passport.user.profile.email,
+        affiliation: req.session.passport.user.profile.schacHomeOrganization,
       }
     : JSON.parse(await getSessionData(req.query.sessionId, "userDetails"));
   req.sessionId = req.query.sessionId;
@@ -83,7 +84,7 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
         email: req.userData.email,
       },
     };
-    console.log(options);
+    // console.log(options);
     let jsonToSend = { name: "", surname: "" };
     try {
       let result = await axios.request(options).then(async (resp) => {
@@ -96,6 +97,8 @@ const selectCredentialtoIssue = async (app, req, res, serverEndpoint) => {
             if (jsonToSend.name === "") jsonToSend.name = element.first_name;
             if (jsonToSend.surname === "")
               jsonToSend.surname = element.last_name;
+            if (jsonToSend.affiliation === "")
+              jsonToSend.affiliation = element.affiliation;
             if (jsonToSend.workshops === undefined) {
               jsonToSend.workshops = [];
             }

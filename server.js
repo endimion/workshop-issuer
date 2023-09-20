@@ -303,6 +303,9 @@ app.prepare().then(async () => {
               if (jsonToSend.workshops === undefined) {
                 jsonToSend.workshops = [];
               }
+              if (jsonToSend.affiliation === undefined) {
+                jsonToSend.affiliation = element.affiliation
+              }
               jsonToSend.workshops.push(element.workshop.title);
             }
           });

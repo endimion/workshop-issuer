@@ -23,6 +23,7 @@ const setOrUpdateSessionData = async (
     [variableName]: variableValue,
   };
   console.log("object to cache with key sessionId " + sessionId + "-variable name-"+ variableName);
+  console.log(variableValue)
   // console.log(cacheObject);
   //frist make sure object doesnot exist
   //if it exists get it and update if necessary its keys

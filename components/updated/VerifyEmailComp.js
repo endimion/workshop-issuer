@@ -64,7 +64,7 @@ const VerifyEmail = ({ sessionId, basePath }) => {
       fetch(url, options)
         .then((response) => response.json())
         .then((userDetailsData) => {
-          // console.log(data);
+          console.log(userDetailsData);
 
           // add user data to session
           url = basePath ? `/${basePath}/update-session` : `/update-session`;
@@ -81,6 +81,7 @@ const VerifyEmail = ({ sessionId, basePath }) => {
                 surname: userDetailsData.surname,
                 email: email,
                 workshops: userDetailsData.workshops,
+                affiliation: userDetailsData.affiliation
               },
               variable: "userDetails",
             }),
