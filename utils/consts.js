@@ -31,7 +31,7 @@ module.exports = Object.freeze({
   GATACA_CREDENTIAL_ISSUE_SESSION_URL:
     "https://certify.gataca.io/api/v1/issuanceRequests",
 
-    WS_URL : process.env.WS_URL?process.env.WS_URL: "https://dss.aegean.gr", //"http://localhost:5000", //,
+    WS_URL : process.env.WS_URL?process.env.WS_URL: "https://dss.aegean.gr", //"http://localhost:5000", "https://dss.aegean.gr"//,
     WS_API: process.env.WS_API?process.env.WS_API: "https://dss.aegean.gr/gataca-helper", // "http://localhost:5000",//"",
 
   CHECK_USER_WORKSHOPS: process.env.CHECK_USER_WORKSHOPS

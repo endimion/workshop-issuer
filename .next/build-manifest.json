@@ -24,15 +24,15 @@
       "static/chunks/webpack.js",
       "static/chunks/pages/_error.js"
     ],
-    "/email-verification": [
-      "static/chunks/main.js",
-      "static/chunks/webpack.js",
-      "static/chunks/pages/email-verification.js"
-    ],
     "/issue_card": [
       "static/chunks/main.js",
       "static/chunks/webpack.js",
       "static/chunks/pages/issue_card.js"
+    ],
+    "/verify-user": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/verify-user.js"
     ]
   },
   "ampFirstPages": []
