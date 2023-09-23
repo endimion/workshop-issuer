@@ -8,23 +8,29 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Link from "next/link";
+import ListItemIcon from "@mui/material/ListItemIcon";
 
 const CredentialSelectorComponent = (props) => {
   const tableStyles = { ...styles, ...stylesCustom };
   // const useStyles = makeStyles(tableStyles);
-
+    let ticketUrl = props.basePath ? `/${props.basePath}/profile.svg` : process.env.BASE_PATH
+        ? `/${process.env.BASE_PATH}/ticket-solid.svg`: "/ticket-solid.svg";
   let optionalCredentialsList = props.optionalCredentials.map(
     (credentialDef, index) => {
       return (
-        <ListItem disablePadding key={credentialDef.name}>
+        <ListItem disablePadding key={credentialDef.name} className="credential" >
           <ListItemButton
+              className="credential-item"
             onClick={(event) => {
+              //TODO ensure basePath is fetched here
               window.location.href = props.baseUrl
                 ? `/${props.baseUrl}/issue_card?sessionId=${props.sessionId}&type=${credentialDef.type}`
                 : `/issue_card?sessionId=${props.sessionId}&type=${credentialDef.type}`;
             }}
           >
-            <ListItemText primary={`${1 + index}.Ticket for: ${credentialDef.name}`} />
+              
+              <ListItemIcon> <div className='credential-icon'><img src={ticketUrl}/></div> </ListItemIcon>
+              <ListItemText> <span className='credential-item-text'>{`Ticket for: ${credentialDef.name}`}</span></ListItemText>
           </ListItemButton>
         </ListItem>
       );
@@ -33,25 +39,31 @@ const CredentialSelectorComponent = (props) => {
 
   let toRender =
     props.optionalCredentials && props.optionalCredentials.length > 0 ? (
-      <>
-        <Typography sx={{ mt: 6, mb: 4 }}>
+      <div className="content-wrapper">
+        <h2 className="">
           Select one of the available Tickets to Issue:
-        </Typography>
-        <Box fontWeight="fontWeightBold" display="inline">
-          <List>{optionalCredentialsList}</List>
-        </Box>
-      </>
+        </h2>
+          <div className="inner-content">
+              <Box fontWeight="fontWeightBold" display="inline">
+                  <List>{optionalCredentialsList}</List>
+              </Box>
+          </div>
+      </div>
     ) : (
-      <>
-        <Typography sx={{ mt: 6, mb: 4 }}>
-          Based on the authentication details you provided, you are not entitled
-          to issue any Ticket Credential.
-        </Typography>
-        <Typography sx={{ mt: 6, mb: 4 }}>
-          Please ensure you have registered to an ERUA workshop and you have
-          been approved before trying again.
-        </Typography>
-      </>
+      <div className="content-wrapper">
+          <div style={{textAlign:'left'}}>
+              <h2> No Ticket Credential</h2>
+              <Typography sx={{ mt: 6, mb: 2 }}>
+                  Based on the authentication details you provided, you are not entitled
+                  to issue any Ticket Credential.
+              </Typography>
+              <Typography sx={{ mt: 2, mb: 4 }}>
+                  Please ensure you have registered to an ERUA workshop and you have
+                  been approved before trying again.
+              </Typography>
+          </div>
+
+      </div>
     );
 
   return toRender;

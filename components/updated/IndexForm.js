@@ -31,9 +31,6 @@ export default function IndexForm(props) {
         <title>ERUA Workshop Ticket Issuer</title>
       </Head>
 
-      <Typography variant="h5" sx={{ mt: 6, mb: 4 }} style={top3EM}>
-        
-      </Typography>
 
       {/* <Typography sx={{ mt: 6, mb: 4 }} style={top1EM}>
         To generate your Ticket for an ERUA Workshop, first verify you identity
