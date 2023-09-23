@@ -35,7 +35,8 @@ const CustomStepper = (props) => {
   return (
     <Stepper activeStep={props.activeStep}>
       {props.steps.map((label, index) => {
-        const stepProps = {};
+        const stepProps = {
+        };
         const labelProps = {};
         if (isStepOptional(index) && index != 2) {
           labelProps.optional = (
@@ -46,7 +47,7 @@ const CustomStepper = (props) => {
           stepProps.completed = false;
         }
         return (
-          <Step key={label} {...stepProps}>
+          <Step className="stepper" key={label} {...stepProps}>
             <StepLabel {...labelProps}>{label}</StepLabel>
           </Step>
         );

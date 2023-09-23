@@ -8,50 +8,37 @@ import {
   AppBar,
   Typography,
   Toolbar,
-   
+
 } from "@material-ui/core";
 import Link from "next/link";
 
 export default function LoginForm({ value }) {
-  const paperStyle = {
-    padding: 20,
-    // height: "70vh",
-    width: "70%",
-    margin: "20px auto",
-  };
 
-  const innerStyle = {
-    padding: 20,
-    // height: "70vh",
-    width: "60%",
-    margin: "20px auto",
-  };
+
 
   const btnstyle = { margin: "8px 0" };
-  const eruaBtnStyle = { margin: "8px 0", backgroundColor: "#00ff9a" };
-  const othersBtnStyle = { margin: "8px 0", backgroundColor: "#525562" };
-  const top1EM = { marginTop: "1em" };
+  const eruaBtnStyle = { margin: "2px 0", backgroundColor: "#00ff9a" };
+  const othersBtnStyle = { margin: "2px 0", backgroundColor: "#525562" };
   return (
-    <Grid style={top1EM}>
-      <Paper elevation={10} style={paperStyle}>
+    <Grid>
+      <Paper className="content-wrapper login-wrapper" >
         <Grid align="center">
           <h2>Sign In to issue your ticket</h2>
         </Grid>
+        <Grid align="center" className="inner-content ">
+          <div class="login-content">
+            <Button
+                type="submit"
+                variant="contained"
+                style={eruaBtnStyle}
+                fullWidth
+            >
+              <Link href="login">
+                <span style={{ color: "black" }}>1. ERUA Members: ERUA-iD</span>
+              </Link>
+            </Button>
 
-        <Grid align="center" style={innerStyle}>
-          <Button
-            type="submit"
-            color="primary"
-            variant="contained"
-            style={eruaBtnStyle}
-            fullWidth
-          >
-            <Link href="login">
-              <span style={{ color: "black" }}>1. ERUA Members: ERUA-iD</span>
-            </Link>
-          </Button>
-
-          {/* <Button
+            {/* <Button
             type="submit"
             color="primary"
             variant="contained"
@@ -66,20 +53,22 @@ export default function LoginForm({ value }) {
             </Link>
           </Button> */}
 
-          <Button
-            type="submit"
-            color="primary"
-            variant="contained"
-            style={btnstyle}
-            fullWidth
-          >
-            <Link href="email-verification">
+            <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+                style={btnstyle}
+                fullWidth
+            >
+              <Link href="email-verification">
               <span style={{ color: "white" }}>
                 {" "}
-                3. Others: email verification
+                2. Others: email verification
               </span>
-            </Link>
-          </Button>
+              </Link>
+            </Button>
+          </div>
+
         </Grid>
       </Paper>
     </Grid>

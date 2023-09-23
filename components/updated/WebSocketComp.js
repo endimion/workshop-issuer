@@ -18,7 +18,6 @@ const WebsocketComp = (props) => {
         givenName: userData.profile.given_name,
         familyName: userData.profile.family_name,
         emailAddress: userData.profile.email,
-        affiliation:userData.profile.schacHomeOrganization,
       };
     }
 
@@ -35,8 +34,6 @@ const WebsocketComp = (props) => {
         issueTemplate: issueTemplate,
       },
     };
-    console.log("posting to /issue")
-    console.log(options)
     axios
       .request(options)
       .then(function (response) {
